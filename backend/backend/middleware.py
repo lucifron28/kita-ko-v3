@@ -180,8 +180,28 @@ class FileUploadSecurityMiddleware(MiddlewareMixin):
     def process_request(self, request):
         """Validate file uploads"""
         if request.path.startswith('/api/transactions/upload/') and request.method == 'POST':
-            # Check if user is authenticated
-            if not (hasattr(request, 'user') and request.user.is_authenticated):
+            # Try to authenticate JWT token for this specific endpoint
+            authenticated = False
+            
+            # Check session authentication first
+            if hasattr(request, 'user') and request.user.is_authenticated:
+                authenticated = True
+            
+            # If not authenticated via session, try JWT
+            if not authenticated:
+                from rest_framework_simplejwt.authentication import JWTAuthentication
+                from rest_framework.exceptions import AuthenticationFailed
+                
+                jwt_auth = JWTAuthentication()
+                try:
+                    auth_result = jwt_auth.authenticate(request)
+                    if auth_result:
+                        request.user, _ = auth_result
+                        authenticated = True
+                except AuthenticationFailed:
+                    pass
+            
+            if not authenticated:
                 return JsonResponse(
                     {'error': 'Authentication required for file uploads'},
                     status=401
