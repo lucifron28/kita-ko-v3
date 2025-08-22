@@ -13,7 +13,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { api } from '../services/api';
+import api from '../services/api';
 
 const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
   const [loading, setLoading] = useState(false);
