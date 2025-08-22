@@ -337,6 +337,96 @@ def delete_file_upload(request, upload_id):
         )
 
 
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_file_upload_transactions(request, upload_id):
+    """
+    Get transactions extracted from a specific file upload for review
+    """
+    try:
+        file_upload = get_object_or_404(
+            FileUpload,
+            id=upload_id,
+            user=request.user
+        )
+
+        transactions = file_upload.transactions.all().order_by('-date')
+        serializer = TransactionSerializer(transactions, many=True)
+        
+        return Response({
+            'file_upload': {
+                'id': str(file_upload.id),
+                'filename': file_upload.original_filename,
+                'processing_status': file_upload.processing_status,
+                'uploaded_at': file_upload.uploaded_at
+            },
+            'transactions': serializer.data,
+            'count': transactions.count()
+        })
+
+    except Exception as e:
+        logger.error(f"Failed to get transactions for upload {upload_id}: {str(e)}")
+        return Response(
+            {'error': 'Failed to retrieve transactions'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def approve_file_upload_transactions(request, upload_id):
+    """
+    Approve/finalize transactions from a file upload after review
+    """
+    try:
+        file_upload = get_object_or_404(
+            FileUpload,
+            id=upload_id,
+            user=request.user
+        )
+
+        transaction_updates = request.data.get('transactions', [])
+        approved_transactions = []
+        rejected_transaction_ids = request.data.get('rejected_transaction_ids', [])
+
+        # Delete rejected transactions
+        if rejected_transaction_ids:
+            file_upload.transactions.filter(id__in=rejected_transaction_ids).delete()
+
+        # Update approved transactions
+        for transaction_data in transaction_updates:
+            try:
+                transaction = file_upload.transactions.get(id=transaction_data['id'])
+                # Update transaction fields if provided
+                for field in ['amount', 'description', 'transaction_type', 'category', 'counterparty']:
+                    if field in transaction_data:
+                        setattr(transaction, field, transaction_data[field])
+                
+                transaction.save()
+                approved_transactions.append(transaction)
+            except Transaction.DoesNotExist:
+                continue
+
+        # Mark file upload as processed after approval
+        file_upload.processing_status = 'processed'
+        file_upload.save()
+
+        logger.info(f"Approved {len(approved_transactions)} transactions, rejected {len(rejected_transaction_ids)} for upload {upload_id}")
+        
+        return Response({
+            'message': 'Transactions approved successfully',
+            'approved_count': len(approved_transactions),
+            'rejected_count': len(rejected_transaction_ids)
+        })
+
+    except Exception as e:
+        logger.error(f"Failed to approve transactions for upload {upload_id}: {str(e)}")
+        return Response(
+            {'error': 'Failed to approve transactions'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def process_file_upload(request, upload_id):
@@ -370,7 +460,8 @@ def process_file_upload(request, upload_id):
             logger.info(f"File processing completed for {file_upload.original_filename}")
             return Response({
                 'message': 'File processed successfully',
-                'transactions_created': result['transactions_created']
+                'transactions_created': result['transactions_created'],
+                'upload_id': str(file_upload.id)
             })
         else:
             return Response(
