@@ -18,7 +18,7 @@ class User(AbstractUser):
     # Contact Information
     email = models.EmailField(unique=True)
     phone_regex = RegexValidator(
-        regex=r'^\+?63\d{10}$',
+        regex=r'^(\+639\d{9}|09\d{9})$',
         message="Phone number must be in format: '+639123456789' or '09123456789'"
     )
     phone_number = models.CharField(validators=[phone_regex], max_length=15, blank=True)
