@@ -223,4 +223,6 @@ export const formatDateTime = (date) => {
   }).format(new Date(date));
 };
 
+// Export both as default and named export for flexibility
+export { api };
 export default api;
