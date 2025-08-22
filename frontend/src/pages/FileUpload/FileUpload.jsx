@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { 
   Upload, 
@@ -22,6 +22,41 @@ const FileUpload = () => {
   const [uploadProgress, setUploadProgress] = useState({});
   const [reviewModal, setReviewModal] = useState({ isOpen: false, uploadId: null });
   const [processedFiles, setProcessedFiles] = useState([]);
+
+  // Load existing files awaiting review on component mount
+  useEffect(() => {
+    loadAwaitingReviewFiles();
+  }, []);
+
+  const loadAwaitingReviewFiles = async () => {
+    try {
+      const response = await transactionAPI.getUploads();
+      const awaitingFiles = response.data.results
+        .filter(upload => upload.processing_status === 'awaiting_review')
+        .map(upload => ({
+          fileId: `existing-${upload.id}`,
+          uploadId: upload.id,
+          filename: upload.original_filename,
+          status: 'awaiting_review',
+          progress: 90,
+          file: null, // Existing file, not a new upload
+          isExisting: true
+        }));
+      
+      setFiles(prev => [...awaitingFiles, ...prev]);
+      setProcessedFiles(prev => [
+        ...awaitingFiles.map(f => ({
+          fileId: f.fileId,
+          uploadId: f.uploadId,
+          filename: f.filename,
+          status: 'awaiting_review'
+        })),
+        ...prev
+      ]);
+    } catch (error) {
+      console.error('Failed to load awaiting review files:', error);
+    }
+  };
 
   const onDrop = useCallback((acceptedFiles) => {
     const newFiles = acceptedFiles.map(file => ({
@@ -189,6 +224,7 @@ const FileUpload = () => {
   };
 
   const getFileIcon = (filename) => {
+    if (!filename) return <File className="w-8 h-8 text-gray-400" />;
     const ext = filename.split('.').pop().toLowerCase();
     switch (ext) {
       case 'csv':
@@ -301,22 +337,27 @@ const FileUpload = () => {
           <div className="card-body">
             <div className="space-y-4">
               {files.map((fileData) => (
-                <div key={fileData.id} className="bg-gray-700 rounded-lg p-4">
+                <div key={fileData.fileId || fileData.id} className="bg-gray-700 rounded-lg p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center">
-                      {getFileIcon(fileData.file.name)}
+                      {getFileIcon(fileData.filename || fileData.file?.name)}
                       <div className="ml-3">
                         <div className="font-medium text-white">
-                          {fileData.file.name}
+                          {fileData.filename || fileData.file?.name}
                         </div>
                         <div className="text-sm text-gray-400">
-                          {(fileData.file.size / 1024 / 1024).toFixed(2)} MB
+                          {fileData.isExisting 
+                            ? 'Existing file awaiting review'
+                            : fileData.file 
+                              ? `${(fileData.file.size / 1024 / 1024).toFixed(2)} MB`
+                              : 'Unknown size'
+                          }
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                       {getStatusIcon(fileData.status)}
-                      {fileData.status === 'pending' && (
+                      {fileData.status === 'pending' && !fileData.isExisting && (
                         <button
                           onClick={() => removeFile(fileData.id)}
                           className="p-1 text-gray-400 hover:text-red-400"
