@@ -13,12 +13,15 @@ import {
 } from 'lucide-react';
 import { transactionAPI } from '../../services/api';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
+import TransactionReviewModal from '../../components/TransactionReviewModal';
 import toast from 'react-hot-toast';
 
 const FileUpload = () => {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
+  const [reviewModal, setReviewModal] = useState({ isOpen: false, uploadId: null });
+  const [processedFiles, setProcessedFiles] = useState([]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const newFiles = acceptedFiles.map(file => ({
@@ -119,9 +122,23 @@ const FileUpload = () => {
         
         if (processResult.success) {
           setFiles(prev => prev.map(f => 
-            f.id === fileData.id ? { ...f, status: 'completed', progress: 100 } : f
+            f.id === fileData.id ? { 
+              ...f, 
+              status: 'awaiting_review', 
+              progress: 90,
+              uploadId: uploadResult.data.file_upload.id 
+            } : f
           ));
-          results.push({ success: true, filename: fileData.file.name });
+          
+          // Add to processed files for review
+          setProcessedFiles(prev => [...prev, {
+            fileId: fileData.id,
+            uploadId: uploadResult.data.file_upload.id,
+            filename: fileData.file.name,
+            status: 'awaiting_review'
+          }]);
+          
+          results.push({ success: true, filename: fileData.file.name, needsReview: true });
         } else {
           setFiles(prev => prev.map(f => 
             f.id === fileData.id ? { 
@@ -149,9 +166,22 @@ const FileUpload = () => {
     // Show results
     const successful = results.filter(r => r.success).length;
     const failed = results.filter(r => !r.success).length;
+    const needsReview = results.filter(r => r.success && r.needsReview).length;
 
     if (successful > 0) {
-      toast.success(`${successful} file(s) uploaded and processed successfully!`);
+      if (needsReview > 0) {
+        toast.success(`${successful} file(s) processed successfully! Please review extracted transactions.`);
+        // Auto-open the first processed file for review
+        const firstProcessed = results.find(r => r.success && r.needsReview);
+        if (firstProcessed) {
+          const processedFile = processedFiles.find(f => f.filename === firstProcessed.filename);
+          if (processedFile) {
+            setReviewModal({ isOpen: true, uploadId: processedFile.uploadId });
+          }
+        }
+      } else {
+        toast.success(`${successful} file(s) uploaded and processed successfully!`);
+      }
     }
     if (failed > 0) {
       toast.error(`${failed} file(s) failed to upload or process.`);
@@ -180,6 +210,8 @@ const FileUpload = () => {
     switch (status) {
       case 'completed':
         return <CheckCircle className="w-5 h-5 text-green-400" />;
+      case 'awaiting_review':
+        return <AlertCircle className="w-5 h-5 text-blue-400" />;
       case 'error':
         return <AlertCircle className="w-5 h-5 text-red-400" />;
       case 'uploading':
@@ -188,6 +220,25 @@ const FileUpload = () => {
       default:
         return <Clock className="w-5 h-5 text-gray-400" />;
     }
+  };
+
+  const handleOpenReview = (uploadId) => {
+    setReviewModal({ isOpen: true, uploadId });
+  };
+
+  const handleCloseReview = () => {
+    setReviewModal({ isOpen: false, uploadId: null });
+  };
+
+  const handleApproveTransactions = () => {
+    // Mark file as completed and remove from processed files
+    setFiles(prev => prev.map(f => 
+      f.uploadId === reviewModal.uploadId ? { ...f, status: 'completed', progress: 100 } : f
+    ));
+    
+    setProcessedFiles(prev => prev.filter(f => f.uploadId !== reviewModal.uploadId));
+    
+    toast.success('Transactions approved and saved successfully!');
   };
 
   return (
@@ -288,6 +339,36 @@ const FileUpload = () => {
                       <div className="text-xs text-gray-400 mt-1">
                         {fileData.status === 'uploading' ? 'Uploading...' : 'Processing...'}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Awaiting Review Status */}
+                  {fileData.status === 'awaiting_review' && (
+                    <div className="mb-3">
+                      <div className="progress-bar">
+                        <div 
+                          className="progress-fill bg-blue-500"
+                          style={{ width: `${fileData.progress}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="text-sm text-blue-400">
+                          Processing complete - Ready for review
+                        </div>
+                        <button
+                          onClick={() => handleOpenReview(fileData.uploadId)}
+                          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                        >
+                          Review Transactions
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Completed Status */}
+                  {fileData.status === 'completed' && (
+                    <div className="mb-3 text-sm text-green-400">
+                      ✓ Processing complete - Transactions saved
                     </div>
                   )}
 
@@ -392,6 +473,14 @@ const FileUpload = () => {
           </div>
         </div>
       </div>
+
+      {/* Transaction Review Modal */}
+      <TransactionReviewModal
+        uploadId={reviewModal.uploadId}
+        isOpen={reviewModal.isOpen}
+        onClose={handleCloseReview}
+        onApprove={handleApproveTransactions}
+      />
     </div>
   );
 };
