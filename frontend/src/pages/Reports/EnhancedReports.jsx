@@ -83,13 +83,18 @@ const Reports = () => {
   };
 
   const handleGeneratePDF = async (reportId) => {
+    console.log('Generate PDF called for report:', reportId);
+    
     try {
       setGeneratingPDF(prev => ({ ...prev, [reportId]: true }));
       
+      console.log('Making API call to generate PDF...');
       const response = await reportsAPI.generatePDF({
         report_id: reportId,
         include_ai_analysis: true,
       });
+
+      console.log('API response:', response.data);
 
       if (response.data.report) {
         toast.success('PDF generated successfully!');
@@ -108,7 +113,8 @@ const Reports = () => {
       }
     } catch (error) {
       console.error('Failed to generate PDF:', error);
-      const errorMessage = error.response?.data?.details || 'Failed to generate PDF';
+      console.error('Error details:', error.response?.data);
+      const errorMessage = error.response?.data?.details || error.message || 'Failed to generate PDF';
       toast.error(errorMessage);
     } finally {
       setGeneratingPDF(prev => ({ ...prev, [reportId]: false }));
