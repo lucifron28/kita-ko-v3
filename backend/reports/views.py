@@ -125,6 +125,8 @@ class IncomeReportCreateView(generics.CreateAPIView):
         # Enhanced data sources with platform info
         data_sources = list(transactions.values_list('source_platform', flat=True).distinct())
         data_sources = [source for source in data_sources if source]
+        # Ensure unique data sources using set to prevent duplicates
+        data_sources = list(set(data_sources))
 
         # Calculate confidence score based on data quality
         confidence_score = self._calculate_confidence_score(
@@ -255,6 +257,9 @@ def generate_pdf_report(request):
     """
     Generate PDF for an income report with progress tracking
     """
+    logger.info(f"PDF generation request from user: {request.user.email}")
+    logger.info(f"Request data: {request.data}")
+    
     try:
         serializer = ReportGenerationRequestSerializer(
             data=request.data,
