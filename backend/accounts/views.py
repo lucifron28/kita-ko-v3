@@ -260,17 +260,35 @@ class CookieTokenRefreshView(TokenRefreshView):
                 'access': access_token
             })
 
-            # If token rotation is enabled, set new refresh token
+            # If token rotation is enabled, create new refresh token
             if settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS'):
-                new_refresh = refresh.rotate()
-                response.set_cookie(
-                    'refresh_token',
-                    str(new_refresh),
-                    max_age=60 * 60 * 24 * 7,  # 7 days
-                    httponly=True,
-                    secure=not settings.DEBUG,
-                    samesite='Lax'
-                )
+                try:
+                    # Get user from the refresh token payload
+                    user_id = refresh.payload.get('user_id')
+                    user = User.objects.get(id=user_id)
+                    
+                    # Create new refresh token for the user
+                    new_refresh = RefreshToken.for_user(user)
+                    
+                    # Blacklist the old refresh token if blacklisting is enabled
+                    if settings.SIMPLE_JWT.get('BLACKLIST_AFTER_ROTATION'):
+                        try:
+                            refresh.blacklist()
+                        except AttributeError:
+                            # If blacklisting is not available, just continue
+                            pass
+                    
+                    response.set_cookie(
+                        'refresh_token',
+                        str(new_refresh),
+                        max_age=60 * 60 * 24 * 7,  # 7 days
+                        httponly=True,
+                        secure=not settings.DEBUG,
+                        samesite='Lax'
+                    )
+                except (User.DoesNotExist, Exception) as e:
+                    # If user lookup or token creation fails, continue without rotation
+                    logger.warning(f"Token rotation failed: {str(e)}")
 
             return response
 
