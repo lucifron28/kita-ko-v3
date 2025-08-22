@@ -1,7 +1,19 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+    },
+  },
+});
 
 // Import components
 import Layout from './components/Layout/Layout';
@@ -92,36 +104,38 @@ const AppRoutes = () => {
 // Main App component
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-900">
-          <AppRoutes />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#374151',
-                color: '#f8f8f2',
-                border: '1px solid #6b7280',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#50fa7b',
-                  secondary: '#374151',
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-900">
+            <AppRoutes />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#374151',
+                  color: '#f8f8f2',
+                  border: '1px solid #6b7280',
                 },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#ff5555',
-                  secondary: '#374151',
+                success: {
+                  iconTheme: {
+                    primary: '#50fa7b',
+                    secondary: '#374151',
+                  },
                 },
-              },
-            }}
-          />
-        </div>
-      </Router>
-    </AuthProvider>
+                error: {
+                  iconTheme: {
+                    primary: '#ff5555',
+                    secondary: '#374151',
+                  },
+                },
+              }}
+            />
+          </div>
+        </Router>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
