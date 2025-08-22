@@ -32,7 +32,7 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/api/transactions/uploads/${uploadId}/transactions/`);
+      const response = await api.get(`/transactions/uploads/${uploadId}/transactions/`);
       setFileUpload(response.data.file_upload);
       setTransactions(response.data.transactions);
     } catch (error) {
@@ -124,7 +124,7 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
         rejected_transaction_ids: Array.from(rejectedTransactions)
       };
 
-      const response = await api.post(`/api/transactions/uploads/${uploadId}/approve/`, payload);
+      const response = await api.post(`/transactions/uploads/${uploadId}/approve/`, payload);
       
       toast.success(`${response.data.approved_count} transactions approved successfully!`);
       if (response.data.rejected_count > 0) {
