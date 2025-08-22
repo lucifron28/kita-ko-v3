@@ -144,15 +144,15 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-gray-700">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">Review Extracted Transactions</h2>
               {fileUpload && (
-                <p className="text-blue-100 mt-1">
+                <p className="text-purple-100 mt-1">
                   From: {fileUpload.filename} • {transactions.length} transactions found
                 </p>
               )}
@@ -167,11 +167,11 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 bg-gray-800 text-white">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">Loading transactions...</span>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+              <span className="ml-3 text-gray-300">Loading transactions...</span>
             </div>
           ) : (
             <>
@@ -180,19 +180,19 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={() => setShowAllFields(!showAllFields)}
-                    className="flex items-center space-x-2 px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    className="flex items-center space-x-2 px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
                   >
                     {showAllFields ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     <span className="text-sm">{showAllFields ? 'Hide Details' : 'Show All Details'}</span>
                   </button>
                 </div>
                 
-                <div className="text-sm text-gray-600">
-                  <span className="text-green-600 font-medium">
+                <div className="text-sm text-gray-300">
+                  <span className="text-green-400 font-medium">
                     {transactions.length - rejectedTransactions.size} approved
                   </span>
                   {rejectedTransactions.size > 0 && (
-                    <span className="text-red-600 font-medium ml-3">
+                    <span className="text-red-400 font-medium ml-3">
                       {rejectedTransactions.size} rejected
                     </span>
                   )}
