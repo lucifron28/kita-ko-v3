@@ -1,0 +1,265 @@
+@import "tailwindcss";
+
+/* Dracula Color Palette */
+:root {
+  --dracula-background: #282a36;
+  --dracula-current-line: #44475a;
+  --dracula-foreground: #f8f8f2;
+  --dracula-comment: #6272a4;
+  --dracula-cyan: #8be9fd;
+  --dracula-green: #50fa7b;
+  --dracula-orange: #ffb86c;
+  --dracula-pink: #ff79c6;
+  --dracula-purple: #bd93f9;
+  --dracula-red: #ff5555;
+  --dracula-yellow: #f1fa8c;
+}
+
+/* Custom Utility Classes */
+.btn-primary {
+  @apply bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-success {
+  @apply bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-danger {
+  @apply bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+.btn-outline {
+  @apply border-2 border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white font-medium py-2 px-4 rounded-lg transition-all duration-200;
+}
+
+.input-field {
+  @apply w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+}
+
+.input-field-with-icon {
+  @apply w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+}
+
+.input-field-with-icons {
+  @apply w-full pl-10 pr-10 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+}
+
+.card {
+  @apply bg-gray-800 rounded-lg shadow-lg border border-gray-700;
+}
+
+.card-header {
+  @apply px-6 py-4 border-b border-gray-700;
+}
+
+.card-body {
+  @apply px-6 py-4;
+}
+
+.card-footer {
+  @apply px-6 py-4 border-t border-gray-700;
+}
+
+.text-primary {
+  @apply text-purple-400;
+}
+
+.text-success {
+  @apply text-green-400;
+}
+
+.text-warning {
+  @apply text-yellow-400;
+}
+
+.text-danger {
+  @apply text-red-400;
+}
+
+.text-info {
+  @apply text-cyan-400;
+}
+
+.bg-primary {
+  @apply bg-purple-500;
+}
+
+.bg-success {
+  @apply bg-green-500;
+}
+
+.bg-warning {
+  @apply bg-yellow-500;
+}
+
+.bg-danger {
+  @apply bg-red-500;
+}
+
+.bg-info {
+  @apply bg-cyan-500;
+}
+
+.sidebar-nav {
+  @apply flex flex-col space-y-2;
+}
+
+.sidebar-nav-item {
+  @apply flex items-center px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors duration-200;
+}
+
+.sidebar-nav-item.active {
+  @apply text-white bg-purple-600;
+}
+
+.table-container {
+  @apply overflow-x-auto;
+}
+
+.table {
+  @apply min-w-full divide-y divide-gray-700;
+}
+
+.table-header {
+  @apply bg-gray-700;
+}
+
+.table-header-cell {
+  @apply px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider;
+}
+
+.table-body {
+  @apply bg-gray-800 divide-y divide-gray-700;
+}
+
+.table-row {
+  @apply hover:bg-gray-700 transition-colors duration-200;
+}
+
+.table-cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-300;
+}
+
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-800;
+}
+
+.badge-info {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.loading-spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500;
+}
+
+.form-group {
+  @apply mb-4;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-300 mb-2;
+}
+
+.form-error {
+  @apply text-red-400 text-sm mt-1;
+}
+
+.upload-area {
+  @apply border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-purple-500 transition-colors duration-200 cursor-pointer;
+}
+
+.upload-area.dragover {
+  @apply border-purple-500 bg-purple-500/10;
+}
+
+.stat-card {
+  @apply bg-gray-800 rounded-lg p-6 border border-gray-700;
+}
+
+.stat-value {
+  @apply text-2xl font-bold text-white;
+}
+
+.stat-label {
+  @apply text-sm text-gray-400;
+}
+
+.progress-bar {
+  @apply w-full bg-gray-700 rounded-full h-2;
+}
+
+.progress-fill {
+  @apply bg-purple-500 h-2 rounded-full transition-all duration-300;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #44475a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6272a4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #bd93f9;
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Global styles */
+body {
+  @apply bg-gray-900 text-white font-sans;
+}
+
+#root {
+  @apply min-h-screen;
+}
