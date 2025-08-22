@@ -62,6 +62,7 @@ class FileUpload(models.Model):
     PROCESSING_STATUS_CHOICES = [
         ('uploaded', 'Uploaded'),
         ('processing', 'Processing'),
+        ('awaiting_review', 'Awaiting Review'),
         ('processed', 'Processed'),
         ('failed', 'Failed'),
         ('error', 'Error'),
