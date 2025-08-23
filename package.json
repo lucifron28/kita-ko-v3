@@ -1,0 +1,16 @@
+{
+  "name": "kita-ko-v3",
+  "version": "1.0.0",
+  "description": "AI-powered proof-of-income platform for informal earners",
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "heroku-postbuild": "npm run build"
+  },
+  "cacheDirectories": [
+    "frontend/node_modules"
+  ]
+}
