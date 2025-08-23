@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Heroku build script for full-stack deployment
+echo "Starting Heroku build process..."
+
+# Install frontend dependencies and build
+echo "Building frontend..."
+cd frontend
+npm ci --production=false
+npm run build
+cd ..
+
+echo "Frontend build completed!"
+
+# Install backend dependencies (requirements.txt is in root)
+echo "Installing backend dependencies..."
+pip install -r requirements.txt
+
+# Collect static files
+echo "Collecting static files..."
+cd backend
+python manage.py collectstatic --noinput
+cd ..
+
+echo "Build process completed!"
