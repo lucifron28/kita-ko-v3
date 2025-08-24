@@ -97,18 +97,22 @@ const Reports = () => {
       console.log('API response:', response.data);
 
       if (response.data.report) {
-        toast.success('PDF generated successfully!');
+        // Show immediate feedback that generation started
+        toast.success('PDF generation started! Please wait...');
         
-        // Update the report in the list
+        // Update the report status to generating
         setReports(prev => prev.map(report => 
           report.id === reportId 
-            ? { ...report, ...response.data.report }
+            ? { ...report, status: 'generating' }
             : report
         ));
         
+        // Start polling for completion
+        startPDFStatusPolling(reportId);
+        
         // Show status modal for progress
         const report = reports.find(r => r.id === reportId);
-        setSelectedReport(report);
+        setSelectedReport({ ...report, status: 'generating' });
         setShowStatusModal(true);
       }
     } catch (error) {
@@ -119,6 +123,66 @@ const Reports = () => {
     } finally {
       setGeneratingPDF(prev => ({ ...prev, [reportId]: false }));
     }
+  };
+
+  const startPDFStatusPolling = (reportId) => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const statusResponse = await reportsAPI.getReportStatus(reportId);
+        const status = statusResponse.data;
+        
+        console.log('Status poll result:', status);
+        
+        // Update report in list
+        setReports(prev => prev.map(report => 
+          report.id === reportId 
+            ? { 
+                ...report, 
+                status: status.status,
+                pdf_file: status.pdf_available ? report.pdf_file : null 
+              }
+            : report
+        ));
+        
+        // Update selected report if status modal is open
+        setSelectedReport(prev => prev?.id === reportId ? {
+          ...prev,
+          status: status.status,
+          pdf_file: status.pdf_available ? prev.pdf_file : null
+        } : prev);
+        
+        // Stop polling when done
+        if (status.status === 'completed') {
+          clearInterval(pollInterval);
+          toast.success('PDF generated successfully!');
+          
+          // Refresh the full report data
+          setTimeout(async () => {
+            try {
+              const reportResponse = await reportsAPI.getReport(reportId);
+              setReports(prev => prev.map(report => 
+                report.id === reportId ? reportResponse.data : report
+              ));
+            } catch (e) {
+              console.error('Failed to refresh report:', e);
+            }
+          }, 500);
+          
+        } else if (status.status === 'failed') {
+          clearInterval(pollInterval);
+          toast.error(`PDF generation failed: ${status.message}`);
+        }
+        
+      } catch (error) {
+        console.error('Status polling error:', error);
+        // Don't stop polling on temporary network errors
+      }
+    }, 3000); // Poll every 3 seconds
+    
+    // Stop polling after 5 minutes (safety net)
+    setTimeout(() => {
+      clearInterval(pollInterval);
+    }, 300000);
   };
 
   const handleDownloadReport = async (report) => {

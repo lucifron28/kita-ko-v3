@@ -255,7 +255,7 @@ class IncomeReportDetailView(generics.RetrieveUpdateDestroyAPIView):
 @permission_classes([permissions.IsAuthenticated])
 def generate_pdf_report(request):
     """
-    Generate PDF for an income report with progress tracking
+    Start PDF generation for an income report (async processing)
     """
     logger.info(f"PDF generation request from user: {request.user.email}")
     logger.info(f"Request data: {request.data}")
@@ -272,7 +272,10 @@ def generate_pdf_report(request):
 
         if report.status == 'generating':
             return Response(
-                {'message': 'Report is already being generated'},
+                {
+                    'message': 'Report is already being generated',
+                    'report': IncomeReportSerializer(report, context={'request': request}).data
+                },
                 status=status.HTTP_200_OK
             )
 
@@ -290,28 +293,33 @@ def generate_pdf_report(request):
         report.generation_error = ''  # Clear any previous errors
         report.save(update_fields=['status', 'generation_error'])
 
-        # Generate PDF
-        generator = IncomeReportGenerator()
-        success = generator.generate_report(report)
-
-        if success:
-            # Refresh report data from database
-            report.refresh_from_db()
-            logger.info(f"Generated PDF for report {report.id}")
-            return Response(
-                {
-                    'message': 'PDF report generated successfully',
-                    'report': IncomeReportSerializer(report, context={'request': request}).data
-                }
-            )
-        else:
-            return Response(
-                {'error': 'PDF generation failed', 'details': report.generation_error},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        # Start background PDF generation
+        from threading import Thread
+        
+        def generate_pdf_background():
+            try:
+                generator = IncomeReportGenerator()
+                generator.generate_report(report)
+                logger.info(f"Background PDF generation completed for report {report.id}")
+            except Exception as e:
+                logger.error(f"Background PDF generation failed: {str(e)}")
+                # The generator already handles error status updates
+        
+        # Start generation in background thread
+        thread = Thread(target=generate_pdf_background)
+        thread.daemon = True
+        thread.start()
+        
+        # Return immediately with status
+        return Response(
+            {
+                'message': 'PDF generation started',
+                'report': IncomeReportSerializer(report, context={'request': request}).data
+            }
+        )
 
     except Exception as e:
-        logger.error(f"PDF generation failed: {str(e)}")
+        logger.error(f"PDF generation start failed: {str(e)}")
         # Update report status if we have the report
         if 'report' in locals():
             report.status = 'failed'
@@ -319,7 +327,7 @@ def generate_pdf_report(request):
             report.save(update_fields=['status', 'generation_error'])
         
         return Response(
-            {'error': 'PDF generation failed', 'details': str(e)},
+            {'error': 'PDF generation start failed', 'details': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
