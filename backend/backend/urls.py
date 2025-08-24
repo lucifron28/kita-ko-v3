@@ -49,9 +49,18 @@ urlpatterns = [
     path('api/ai/', include('ai_processing.urls')),
     path('api/reports/', include('reports.urls')),
     
-    # React app - catch all non-API routes
-    re_path(r'^(?!api/).*$', react_app_view, name='react_app'),
+    # React app - catch all non-API and non-static routes
+    re_path(r'^(?!api/|static/|assets/|admin/).*$', react_app_view, name='react_app'),
 ]
+
+# In production, serve static files (including React assets) via WhiteNoise
+if not settings.DEBUG:
+    # WhiteNoise handles static files in production, but we need to serve 
+    # React assets at /assets/ paths as well
+    from django.views.static import serve
+    urlpatterns += [
+        re_path(r'^assets/(?P<path>.*)$', serve, {'document_root': os.path.join(settings.BASE_DIR, '../frontend/dist/assets')}),
+    ]
 
 # Serve media files in development
 if settings.DEBUG:
