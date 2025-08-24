@@ -69,7 +69,45 @@ Kitako bridges the gap between informal income and formal financial requirements
 - Comprehensive dashboard with statistics
 - Intuitive file upload with drag-and-drop
 
-## 🛠️ Installation & Setup
+## � Quick Start
+
+### One-Command Setup
+```bash
+# Clone the repository
+git clone https://github.com/lucifron28/kita-ko-v3.git
+cd kita-ko-v3
+
+# Run the full application (recommended)
+./run_app.sh
+```
+
+### Quick Development Start
+```bash
+# Simple start for development
+./quick_start.sh
+```
+
+### Development Utilities
+```bash
+# View all available commands
+./dev.sh help
+
+# Common commands:
+./dev.sh setup      # Initial project setup
+./dev.sh test       # Run all tests
+./dev.sh migrate    # Run database migrations
+./dev.sh superuser  # Create admin user
+./dev.sh status     # Check application status
+```
+
+After running any of these scripts, your application will be available at:
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **Admin Panel**: http://localhost:8000/admin
+
+## 📋 Manual Setup
+
+If you prefer manual setup or need to troubleshoot: & Setup
 
 ### Prerequisites
 - Python 3.9+
@@ -224,7 +262,58 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Tailwind CSS** for styling framework
 - **Dracula Theme** for color palette
 
-## 📞 Support
+## � Automation Scripts
+
+The project includes several shell scripts to streamline development:
+
+### 🚀 `run_app.sh` - Full Application Runner
+Comprehensive script that:
+- ✅ Checks system requirements (Python, Node.js, npm)
+- ✅ Verifies port availability (8000, 5173)
+- ✅ Sets up Python virtual environment
+- ✅ Installs backend dependencies
+- ✅ Runs database migrations
+- ✅ Creates environment files from templates
+- ✅ Starts Django server in background
+- ✅ Installs frontend dependencies
+- ✅ Starts React development server
+- ✅ Monitors both services
+- ✅ Provides colored output and status updates
+- ✅ Graceful shutdown with Ctrl+C
+
+### ⚡ `quick_start.sh` - Development Quick Start
+Lightweight script for rapid development:
+- Simple setup and start process
+- Automatic environment setup
+- Background service management
+- Minimal output for quick iterations
+
+### 🛠️ `dev.sh` - Development Utilities
+Comprehensive development helper with commands:
+
+```bash
+./dev.sh setup      # Initial project setup
+./dev.sh test       # Run comprehensive test suite
+./dev.sh migrate    # Run database migrations
+./dev.sh superuser  # Create Django superuser
+./dev.sh reset-db   # Reset database (WARNING: destroys data)
+./dev.sh clean      # Clean cache and dependencies
+./dev.sh lint       # Run frontend linting
+./dev.sh build      # Build frontend for production
+./dev.sh logs       # View application logs
+./dev.sh status     # Check application status
+./dev.sh help       # Show all available commands
+```
+
+### Script Features:
+- 🎨 Colored output for better readability
+- ⚡ Background process management
+- 🔍 Health checks and status monitoring
+- 🧹 Cleanup and maintenance utilities
+- 🚨 Error handling and graceful shutdowns
+- 📊 Service status monitoring
+
+## �📞 Support
 
 For technical support or questions:
 - Email: support@kitako.ph

@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
 import { 
   Upload, 
   File, 
@@ -20,16 +21,23 @@ const FileUpload = () => {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
-  const [reviewModal, setReviewModal] = useState({ isOpen: false, uploadId: null });
+  const [reviewModal, setReviewModal] = useState({ isOpen: false, uploadId: null, fileUpload: null });
   const [processedFiles, setProcessedFiles] = useState([]);
+  const [isLoadingExisting, setIsLoadingExisting] = useState(false);
+  const navigate = useNavigate();
 
   // Load existing files awaiting review on component mount
   useEffect(() => {
-    loadAwaitingReviewFiles();
-  }, []);
+    if (!isLoadingExisting) {
+      loadAwaitingReviewFiles();
+    }
+  }, [isLoadingExisting]);
 
   const loadAwaitingReviewFiles = async () => {
+    if (isLoadingExisting) return;
+    
     try {
+      setIsLoadingExisting(true);
       const response = await transactionAPI.getUploads();
       const awaitingFiles = response.data.results
         .filter(upload => upload.processing_status === 'awaiting_review')
@@ -43,18 +51,29 @@ const FileUpload = () => {
           isExisting: true
         }));
       
-      setFiles(prev => [...awaitingFiles, ...prev]);
-      setProcessedFiles(prev => [
-        ...awaitingFiles.map(f => ({
-          fileId: f.fileId,
-          uploadId: f.uploadId,
-          filename: f.filename,
-          status: 'awaiting_review'
-        })),
-        ...prev
-      ]);
+      // Only add files that don't already exist
+      setFiles(prev => {
+        const existingIds = new Set(prev.map(f => f.fileId || f.id));
+        const newFiles = awaitingFiles.filter(f => !existingIds.has(f.fileId));
+        return [...newFiles, ...prev];
+      });
+      
+      setProcessedFiles(prev => {
+        const existingIds = new Set(prev.map(f => f.fileId));
+        const newProcessedFiles = awaitingFiles
+          .filter(f => !existingIds.has(f.fileId))
+          .map(f => ({
+            fileId: f.fileId,
+            uploadId: f.uploadId,
+            filename: f.filename,
+            status: 'awaiting_review'
+          }));
+        return [...newProcessedFiles, ...prev];
+      });
     } catch (error) {
       console.error('Failed to load awaiting review files:', error);
+    } finally {
+      setIsLoadingExisting(false);
     }
   };
 
@@ -274,7 +293,26 @@ const FileUpload = () => {
     
     setProcessedFiles(prev => prev.filter(f => f.uploadId !== reviewModal.uploadId));
     
-    toast.success('Transactions approved and saved successfully!');
+    // Enhanced success message with navigation action
+    toast.success(
+      (t) => (
+        <div className="flex flex-col space-y-2">
+          <span>Transactions confirmed successfully! They're in your transaction history.</span>
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              navigate('/transactions');
+            }}
+            className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-md transition-colors"
+          >
+            View All Transactions →
+          </button>
+        </div>
+      ),
+      { duration: 8000 }
+    );
+    
+    console.log('✅ Transactions confirmed - they are already visible in /transactions page since file processing');
   };
 
   return (

@@ -126,9 +126,19 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
 
       const response = await api.post(`/transactions/uploads/${uploadId}/approve/`, payload);
       
+      console.log('✅ Transaction approval response:', response.data);
       toast.success(`${response.data.approved_count} transactions approved successfully!`);
       if (response.data.rejected_count > 0) {
         toast.info(`${response.data.rejected_count} transactions rejected`);
+      }
+      
+      // Debug: Check if transactions are now in the database
+      try {
+        const transactionCheck = await api.get('/transactions/');
+        console.log('📊 Total transactions after approval:', transactionCheck.data.count || transactionCheck.data.length);
+        console.log('💡 Note: Transactions were already in your history - approval just confirms them!');
+      } catch (err) {
+        console.error('Failed to check transactions after approval:', err);
       }
       
       onApprove();
@@ -210,8 +220,8 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                       key={transaction.id}
                       className={`border rounded-lg p-4 transition-all ${
                         isRejected 
-                          ? 'bg-red-50 border-red-200 opacity-75' 
-                          : 'bg-white border-gray-200 hover:border-gray-300'
+                          ? 'bg-red-900/20 border-red-600 opacity-75' 
+                          : 'bg-gray-700/50 border-gray-600 hover:border-purple-500'
                       }`}
                     >
                       <div className="flex items-start justify-between">
@@ -220,7 +230,7 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                             <div className="space-y-3">
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                                  <label className="block text-sm font-medium text-gray-300 mb-1">Amount</label>
                                   <input
                                     type="number"
                                     step="0.01"
@@ -229,18 +239,18 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                                       ...prev,
                                       amount: e.target.value
                                     }))}
-                                    className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-1 border border-gray-600 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                                   />
                                 </div>
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                  <label className="block text-sm font-medium text-gray-300 mb-1">Type</label>
                                   <select
                                     value={editingTransaction.transaction_type}
                                     onChange={(e) => setEditingTransaction(prev => ({
                                       ...prev,
                                       transaction_type: e.target.value
                                     }))}
-                                    className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-1 border border-gray-600 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                                   >
                                     <option value="income">Income</option>
                                     <option value="expense">Expense</option>
@@ -253,7 +263,7 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                                 </div>
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
                                 <textarea
                                   value={editingTransaction.description}
                                   onChange={(e) => setEditingTransaction(prev => ({
@@ -261,19 +271,19 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                                     description: e.target.value
                                   }))}
                                   rows="2"
-                                  className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  className="w-full px-3 py-1 border border-gray-600 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 />
                               </div>
                               <div className="flex space-x-2">
                                 <button
                                   onClick={saveTransactionEdit}
-                                  className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                  className="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
                                 >
                                   Save
                                 </button>
                                 <button
                                   onClick={() => setEditingTransaction(null)}
-                                  className="px-3 py-1 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                                  className="px-3 py-1 bg-gray-600 text-gray-300 rounded-md hover:bg-gray-500 transition-colors"
                                 >
                                   Cancel
                                 </button>
@@ -286,19 +296,19 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTransactionTypeColor(transaction.transaction_type)}`}>
                                     {transaction.transaction_type.replace('_', ' ')}
                                   </span>
-                                  <span className="font-semibold text-lg">
+                                  <span className="font-semibold text-lg text-white">
                                     {formatCurrency(transaction.amount)}
                                   </span>
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-gray-400">
                                   {formatDate(transaction.date)}
                                 </div>
                               </div>
                               
-                              <p className="text-gray-900 font-medium">{transaction.description}</p>
+                              <p className="text-gray-200 font-medium">{transaction.description}</p>
                               
                               {showAllFields && (
-                                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 pt-2 border-t border-gray-100">
+                                <div className="grid grid-cols-2 gap-4 text-sm text-gray-400 pt-2 border-t border-gray-600">
                                   {transaction.category && (
                                     <div className="flex items-center space-x-2">
                                       <Tag className="w-4 h-4" />
@@ -333,7 +343,7 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                             <button
                               onClick={() => handleEditTransaction(transaction)}
                               disabled={isRejected}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-2 text-purple-400 hover:bg-gray-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Edit transaction"
                             >
                               <Edit3 className="w-4 h-4" />
@@ -343,8 +353,8 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
                             onClick={() => handleRejectTransaction(transaction.id)}
                             className={`p-2 rounded-lg transition-colors ${
                               isRejected
-                                ? 'text-green-600 hover:bg-green-50'
-                                : 'text-red-600 hover:bg-red-50'
+                                ? 'text-green-400 hover:bg-gray-600'
+                                : 'text-red-400 hover:bg-gray-600'
                             }`}
                             title={isRejected ? 'Restore transaction' : 'Reject transaction'}
                           >
@@ -358,27 +368,28 @@ const TransactionReviewModal = ({ uploadId, isOpen, onClose, onApprove }) => {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-                <div className="text-sm text-gray-600">
-                  Review and modify the extracted transactions. You can edit details, reject incorrect transactions, and then approve the final set.
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-600">
+                <div className="text-sm text-gray-400">
+                  <p>Review and modify the extracted transactions. You can edit details, reject incorrect transactions, and then confirm the final set.</p>
+                  <p className="text-xs text-gray-500 mt-1">💡 Note: These transactions are already in your history and will remain there after confirmation.</p>
                 </div>
                 
                 <div className="flex space-x-3">
                   <button
                     onClick={onClose}
                     disabled={loading}
-                    className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="px-6 py-2 text-gray-400 border border-gray-600 rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleApprove}
                     disabled={loading || transactions.length - rejectedTransactions.size === 0}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                    className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
                   >
                     {loading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
                     <span>
-                      Approve {transactions.length - rejectedTransactions.size} Transaction{transactions.length - rejectedTransactions.size !== 1 ? 's' : ''}
+                      Confirm {transactions.length - rejectedTransactions.size} Transaction{transactions.length - rejectedTransactions.size !== 1 ? 's' : ''}
                     </span>
                   </button>
                 </div>

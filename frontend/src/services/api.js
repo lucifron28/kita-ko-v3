@@ -2,7 +2,10 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 // Base API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const isDevelopment = import.meta.env.MODE === 'development';
+const API_BASE_URL = isDevelopment
+  ? (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api')
+  : '/api';  // Same domain in production
 
 // Create axios instance
 const api = axios.create({
@@ -154,6 +157,7 @@ export const transactionAPI = {
   getTransactions: (params) => api.get('/transactions/', { params }),
   getTransaction: (id) => api.get(`/transactions/${id}/`),
   updateTransaction: (id, data) => api.put(`/transactions/${id}/`, data),
+  deleteTransaction: (id) => api.delete(`/transactions/${id}/`),
   bulkUpdateTransactions: (data) => api.post('/transactions/bulk-update/', data),
   getTransactionSummary: (params) => api.get('/transactions/summary/', { params }),
 };

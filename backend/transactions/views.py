@@ -165,9 +165,9 @@ class TransactionListView(generics.ListAPIView):
         return queryset.order_by('-date')
 
 
-class TransactionDetailView(generics.RetrieveUpdateAPIView):
+class TransactionDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    API endpoint to retrieve or update a specific transaction
+    API endpoint to retrieve, update, or delete a specific transaction
     """
     serializer_class = TransactionSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -175,6 +175,11 @@ class TransactionDetailView(generics.RetrieveUpdateAPIView):
     def get_queryset(self):
         """Return transactions for the current user"""
         return Transaction.objects.filter(user=self.request.user)
+
+    def perform_destroy(self, instance):
+        """Log transaction deletion"""
+        logger.info(f"Transaction deleted: {instance.id} by user {self.request.user.email}")
+        instance.delete()
 
 
 @api_view(['POST'])
@@ -358,7 +363,8 @@ def get_file_upload_transactions(request, upload_id):
                 'id': str(file_upload.id),
                 'filename': file_upload.original_filename,
                 'processing_status': file_upload.processing_status,
-                'uploaded_at': file_upload.uploaded_at
+                'created_at': file_upload.created_at,
+                'processed_at': file_upload.processed_at
             },
             'transactions': serializer.data,
             'count': transactions.count()

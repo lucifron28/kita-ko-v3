@@ -253,3 +253,114 @@ INFO 2025-08-22 14:01:04,754 middleware 54026 140535587761088 Sensitive operatio
 INFO 2025-08-22 14:01:04,757 views 54026 140535587761088 File upload initiated by user test@example.com
 INFO 2025-08-22 14:01:04,765 views 54026 140535587761088 File uploaded successfully: test.csv by test@example.com
 INFO 2025-08-22 14:01:04,938 middleware 54026 140535587761088 Sensitive operation: POST /api/transactions/upload/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 14:19:37,057 middleware 70579 140040297510592 Sensitive operation: POST /api/auth/login/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 14:19:37,300 views 70579 140040297510592 User logged in: integration_test@kitako.com
+INFO 2025-08-22 14:20:06,450 views 70579 140040257660608 Deleted report db9208a8-a192-4bff-95f2-e1f4063b3497 for user integration_test@kitako.com
+INFO 2025-08-22 14:21:02,533 middleware 70579 140040297510592 Sensitive operation: POST /api/reports/create/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 14:21:02,589 views 70579 140040297510592 Calculated financial data for report 85ec3451-cce5-4029-bd8b-f954d51b2d28: Income=₱498,000.00, Confidence=100.0%
+INFO 2025-08-22 14:21:02,589 views 70579 140040297510592 Created income report 85ec3451-cce5-4029-bd8b-f954d51b2d28 for user integration_test@kitako.com
+INFO 2025-08-22 14:29:57,451 services 78931 140442115439552 Generated PDF report for user integration_test@kitako.com
+INFO 2025-08-22 14:31:21,039 middleware 80563 140011332695744 Sensitive operation: POST /api/auth/login/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 14:31:21,257 views 80563 140011332695744 User logged in: integration_test@kitako.com
+INFO 2025-08-22 14:31:38,689 middleware 80563 140011332695744 Sensitive operation: POST /api/reports/generate-pdf/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 14:31:38,693 views 80563 140011332695744 PDF generation request from user: integration_test@kitako.com
+INFO 2025-08-22 14:31:38,693 views 80563 140011332695744 Request data: {'report_id': '85ec3451-cce5-4029-bd8b-f954d51b2d28', 'include_ai_analysis': True}
+INFO 2025-08-22 14:31:48,808 middleware 80563 140011332695744 Sensitive operation: POST /api/reports/generate-pdf/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 14:31:48,812 views 80563 140011332695744 PDF generation request from user: integration_test@kitako.com
+INFO 2025-08-22 14:31:48,812 views 80563 140011332695744 Request data: {'report_id': '85ec3451-cce5-4029-bd8b-f954d51b2d28', 'include_ai_analysis': True}
+INFO 2025-08-22 14:32:03,970 views 80563 140011332695744 Downloaded report 85ec3451-cce5-4029-bd8b-f954d51b2d28
+INFO 2025-08-22 14:41:14,377 services 94800 140384504687552 Generated PDF report for user integration_test@kitako.com
+INFO 2025-08-22 14:42:25,285 views 96709 140228846151360 Downloaded report 85ec3451-cce5-4029-bd8b-f954d51b2d28
+INFO 2025-08-22 15:26:48,989 middleware 134490 140578495919808 Sensitive operation: POST /api/transactions/upload/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 15:26:49,123 middleware 134490 140578495919808 Sensitive operation: POST /api/transactions/upload/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 15:26:49,128 views 134490 140578495919808 File upload initiated by user integration_test@kitako.com
+INFO 2025-08-22 15:26:49,135 views 134490 140578495919808 File uploaded successfully: mock_bpi_statement.pdf by integration_test@kitako.com
+WARNING 2025-08-22 15:26:51,373 processors 134490 140578495919808 PDF processing not implemented for mock_bpi_statement.pdf
+INFO 2025-08-22 15:26:51,377 processors 134490 140578495919808 Processed 0 transactions from mock_bpi_statement.pdf
+INFO 2025-08-22 15:26:51,377 views 134490 140578495919808 File processing completed for mock_bpi_statement.pdf
+INFO 2025-08-22 15:31:24,359 middleware 138114 139747372562112 Sensitive operation: POST /api/auth/login/ - User: None - IP: 127.0.0.1
+ERROR 2025-08-22 15:31:24,545 views 138114 139747372562112 Login failed: {'non_field_errors': [ErrorDetail(string='Invalid email or password', code='invalid')]}
+INFO 2025-08-22 15:31:29,070 middleware 138114 139747372562112 Sensitive operation: POST /api/auth/login/ - User: None - IP: 127.0.0.1
+ERROR 2025-08-22 15:31:29,228 views 138114 139747372562112 Login failed: {'non_field_errors': [ErrorDetail(string='Invalid email or password', code='invalid')]}
+INFO 2025-08-22 15:31:35,106 processors 140752 140291552046016 Processing PDF: mock_bpi_statement_G4NI9N7.pdf
+INFO 2025-08-22 15:31:35,119 processors 140752 140291552046016 Parsed 0 transactions from PDF text
+INFO 2025-08-22 15:31:35,119 processors 140752 140291552046016 Extracted 0 transactions from PDF
+INFO 2025-08-22 15:31:35,122 processors 140752 140291552046016 Processed 0 transactions from mock_bpi_statement_G4NI9N7.pdf
+INFO 2025-08-22 15:31:51,384 processors 142474 140035552857024 Generated 6 mock transactions for mock_bpi_statement.pdf
+INFO 2025-08-22 15:31:51,387 processors 142474 140035552857024 Generated 5 mock transactions for mock_gcash_mobile.pdf
+INFO 2025-08-22 15:31:51,390 processors 142474 140035552857024 Generated 4 mock transactions for mock_paymaya_statement.pdf
+INFO 2025-08-22 15:32:14,806 processors 145404 140515463355328 Processing PDF: mock_gcash_statement.pdf
+INFO 2025-08-22 15:32:14,817 processors 145404 140515463355328 Parsed 0 transactions from PDF text
+INFO 2025-08-22 15:32:14,817 processors 145404 140515463355328 Extracted 0 transactions from PDF
+INFO 2025-08-22 15:32:14,820 processors 145404 140515463355328 Processed 0 transactions from mock_gcash_statement.pdf
+INFO 2025-08-22 15:32:53,210 processors 148246 140294609968064 Processing PDF: mock_bpi_statement_j8nqtXY.pdf
+INFO 2025-08-22 15:32:53,223 processors 148246 140294609968064 Parsed 0 transactions from PDF text
+INFO 2025-08-22 15:32:53,223 processors 148246 140294609968064 No transactions extracted from PDF text, falling back to mock data
+INFO 2025-08-22 15:32:53,223 processors 148246 140294609968064 Generated 6 mock transactions for mock_bpi_statement_j8nqtxy.pdf
+INFO 2025-08-22 15:32:53,223 processors 148246 140294609968064 Final result: 6 transactions from PDF
+INFO 2025-08-22 15:32:53,245 processors 148246 140294609968064 Processed 6 transactions from mock_bpi_statement_j8nqtXY.pdf
+INFO 2025-08-22 15:33:15,660 processors 151518 140123895020480 Processing PDF: mock_gcash_mobile.pdf
+INFO 2025-08-22 15:33:15,665 processors 151518 140123895020480 Parsed 0 transactions from PDF text
+INFO 2025-08-22 15:33:15,665 processors 151518 140123895020480 No transactions extracted from PDF text, falling back to mock data
+INFO 2025-08-22 15:33:15,665 processors 151518 140123895020480 Generated 5 mock transactions for mock_gcash_mobile.pdf
+INFO 2025-08-22 15:33:15,665 processors 151518 140123895020480 Final result: 5 transactions from PDF
+INFO 2025-08-22 15:33:15,685 processors 151518 140123895020480 Processed 5 transactions from mock_gcash_mobile.pdf
+INFO 2025-08-22 15:33:15,703 processors 151518 140123895020480 Processing PDF: mock_paymaya_statement.pdf
+INFO 2025-08-22 15:33:15,713 processors 151518 140123895020480 Parsed 0 transactions from PDF text
+INFO 2025-08-22 15:33:15,713 processors 151518 140123895020480 No transactions extracted from PDF text, falling back to mock data
+INFO 2025-08-22 15:33:15,713 processors 151518 140123895020480 Generated 4 mock transactions for mock_paymaya_statement.pdf
+INFO 2025-08-22 15:33:15,713 processors 151518 140123895020480 Final result: 4 transactions from PDF
+INFO 2025-08-22 15:33:15,728 processors 151518 140123895020480 Processed 4 transactions from mock_paymaya_statement.pdf
+INFO 2025-08-22 15:33:44,461 middleware 138114 139747372562112 Sensitive operation: POST /api/transactions/upload/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 15:33:44,556 middleware 138114 139747372562112 Sensitive operation: POST /api/transactions/upload/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 15:33:44,561 views 138114 139747372562112 File upload initiated by user integration_test@kitako.com
+INFO 2025-08-22 15:33:44,566 views 138114 139747372562112 File uploaded successfully: mock_gcash_statement.pdf by integration_test@kitako.com
+INFO 2025-08-22 15:33:45,153 processors 138114 139747372562112 Processing PDF: mock_gcash_statement_NpPEdnF.pdf
+INFO 2025-08-22 15:33:45,171 processors 138114 139747372562112 Parsed 0 transactions from PDF text
+INFO 2025-08-22 15:33:45,171 processors 138114 139747372562112 No transactions extracted from PDF text, falling back to mock data
+INFO 2025-08-22 15:33:45,172 processors 138114 139747372562112 Generated 5 mock transactions for mock_gcash_statement_nppednf.pdf
+INFO 2025-08-22 15:33:45,172 processors 138114 139747372562112 Final result: 5 transactions from PDF
+INFO 2025-08-22 15:33:45,191 processors 138114 139747372562112 Processed 5 transactions from mock_gcash_statement_NpPEdnF.pdf
+INFO 2025-08-22 15:33:45,191 views 138114 139747372562112 File processing completed for mock_gcash_statement.pdf
+INFO 2025-08-22 16:06:37,117 processors 177411 139880272944064 Processing PDF: test_modal_gcash.pdf
+INFO 2025-08-22 16:06:37,122 processors 177411 139880272944064 Parsed 0 transactions from PDF text
+INFO 2025-08-22 16:06:37,122 processors 177411 139880272944064 No transactions extracted from PDF text, falling back to mock data
+INFO 2025-08-22 16:06:37,122 processors 177411 139880272944064 Generated 5 mock transactions for test_modal_gcash.pdf
+INFO 2025-08-22 16:06:37,122 processors 177411 139880272944064 Final result: 5 transactions from PDF
+INFO 2025-08-22 16:06:37,142 processors 177411 139880272944064 Processed 5 transactions from test_modal_gcash.pdf
+INFO 2025-08-22 16:13:18,785 middleware 156924 139645685851840 Sensitive operation: POST /api/transactions/upload/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 16:13:18,788 views 156924 139645685851840 File upload initiated by user integration_test@kitako.com
+INFO 2025-08-22 16:13:18,795 views 156924 139645685851840 File uploaded successfully: mock_bpi_mobile.pdf by integration_test@kitako.com
+INFO 2025-08-22 16:13:19,288 processors 156924 139645685851840 Processing PDF: mock_bpi_mobile.pdf
+INFO 2025-08-22 16:13:19,292 processors 156924 139645685851840 Parsed 0 transactions from PDF text
+INFO 2025-08-22 16:13:19,293 processors 156924 139645685851840 No transactions extracted from PDF text, falling back to mock data
+INFO 2025-08-22 16:13:19,293 processors 156924 139645685851840 Generated 6 mock transactions for mock_bpi_mobile.pdf
+INFO 2025-08-22 16:13:19,293 processors 156924 139645685851840 Final result: 6 transactions from PDF
+INFO 2025-08-22 16:13:19,320 processors 156924 139645685851840 Processed 6 transactions from mock_bpi_mobile.pdf
+INFO 2025-08-22 16:13:19,321 views 156924 139645685851840 File processing completed for mock_bpi_mobile.pdf
+ERROR 2025-08-22 16:15:13,707 services 156924 139645685851840 OpenRouter API error: Error code: 404 - {'error': {'message': 'No endpoints found for anthropic/claude-3-sonnet.', 'code': 404}, 'user_id': 'user_30Ze6YvbPUcXo64EjqqUrsVR8kt'}
+ERROR 2025-08-22 16:22:32,301 views 186030 140717652440768 Failed to get transactions for upload f14b71fa-d74e-459e-92b3-c50794a83518: 'FileUpload' object has no attribute 'uploaded_at'
+INFO 2025-08-22 16:54:03,501 middleware 204144 140370537084608 Sensitive operation: POST /api/auth/login/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 16:54:03,716 views 204144 140370537084608 User logged in: integration_test@kitako.com
+INFO 2025-08-22 16:54:30,130 views 204144 140370631456448 Approved 6 transactions, rejected 0 for upload f14b71fa-d74e-459e-92b3-c50794a83518
+INFO 2025-08-22 17:36:18,315 views 211951 139623976486592 User logged out: integration_test@kitako.com
+INFO 2025-08-22 17:36:36,434 middleware 211951 139623976486592 Sensitive operation: POST /api/auth/login/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 17:36:36,659 views 211951 139623976486592 User logged in: integration_test@kitako.com
+INFO 2025-08-22 17:51:47,489 views 211951 139623976486592 Approved 6 transactions, rejected 0 for upload f14b71fa-d74e-459e-92b3-c50794a83518
+INFO 2025-08-22 17:52:12,434 views 211951 139623749646016 Approved 5 transactions, rejected 0 for upload b165033c-e061-4e91-a16e-aa09bab97b2d
+INFO 2025-08-22 17:55:13,747 views 211951 139623968093888 Approved 4 transactions, rejected 0 for upload 163b8e7c-9fa5-4a99-a5dc-a5e0522315c8
+ERROR 2025-08-22 17:56:12,473 services 211951 139623976486592 OpenRouter API error: Error code: 404 - {'error': {'message': 'No endpoints found for anthropic/claude-3-sonnet.', 'code': 404}, 'user_id': 'user_30Ze6YvbPUcXo64EjqqUrsVR8kt'}
+INFO 2025-08-22 17:58:45,661 views 211951 139623976486592 Approved 4 transactions, rejected 0 for upload e1a587a3-92b4-4b68-b415-aab9d627f309
+INFO 2025-08-22 18:00:48,917 views 211951 139623976486592 Approved 5 transactions, rejected 0 for upload c9f83e40-5698-4ef0-bb28-1eb64d5f4b99
+INFO 2025-08-22 18:00:51,678 views 211951 139623968093888 Approved 6 transactions, rejected 0 for upload 623abae6-5daa-4004-a9ec-7550d6fe8b28
+INFO 2025-08-22 18:01:17,033 middleware 211951 139623749646016 Sensitive operation: POST /api/transactions/upload/ - User: None - IP: 127.0.0.1
+INFO 2025-08-22 18:01:17,037 views 211951 139623749646016 File upload initiated by user integration_test@kitako.com
+INFO 2025-08-22 18:01:17,070 views 211951 139623749646016 File uploaded successfully: mock_paymaya_statement.pdf by integration_test@kitako.com
+INFO 2025-08-22 18:01:17,939 processors 211951 139623968093888 Processing PDF: mock_paymaya_statement_BYB6g5L.pdf
+INFO 2025-08-22 18:01:17,951 processors 211951 139623968093888 Parsed 0 transactions from PDF text
+INFO 2025-08-22 18:01:17,953 processors 211951 139623968093888 No transactions extracted from PDF text, falling back to mock data
+INFO 2025-08-22 18:01:17,954 processors 211951 139623968093888 Generated 4 mock transactions for mock_paymaya_statement_byb6g5l.pdf
+INFO 2025-08-22 18:01:17,954 processors 211951 139623968093888 Final result: 4 transactions from PDF
+INFO 2025-08-22 18:01:17,984 processors 211951 139623968093888 Processed 4 transactions from mock_paymaya_statement_BYB6g5L.pdf
+INFO 2025-08-22 18:01:17,985 views 211951 139623968093888 File processing completed for mock_paymaya_statement.pdf
+INFO 2025-08-22 18:01:25,618 views 211951 139623968093888 Approved 4 transactions, rejected 0 for upload 201ced7a-96d7-4349-aee1-45a7fe98fe6d

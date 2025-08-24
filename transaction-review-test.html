@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Review Modal Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">🧪 Transaction Review Modal Test</h1>
+        
+        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Authentication Setup</h2>
+            <p class="text-gray-300 mb-4">Click the button below to authenticate with the test user:</p>
+            <button onclick="authenticate()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
+                Set Auth Token
+            </button>
+            <div id="auth-status" class="mt-2 text-sm"></div>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Available Files for Review</h2>
+            <p class="text-gray-300 mb-4">These files are processed and awaiting review:</p>
+            <div id="files-list" class="space-y-2"></div>
+            <button onclick="loadFiles()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors mt-4">
+                Load Files
+            </button>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Test Instructions</h2>
+            <ol class="list-decimal list-inside space-y-2 text-gray-300">
+                <li>Click "Set Auth Token" to authenticate</li>
+                <li>Click "Load Files" to see available files</li>
+                <li>Open the main app at <a href="http://localhost:5173" class="text-blue-400 underline">http://localhost:5173</a></li>
+                <li>Navigate to the Upload page</li>
+                <li>Look for files with "Review Transactions" buttons</li>
+                <li>Click the button to open the transaction review modal</li>
+                <li>Test editing, rejecting, and approving transactions</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU1ODgyOTc3LCJpYXQiOjE3NTU4NzkzNzcsImp0aSI6IjdkZjc3N2ZmNDRlMjQ3N2JhYzhlM2RkMDYwMjVjYTNmIiwidXNlcl9pZCI6IjExZTFjNDFlLTRkOTYtNGI3Zi1iNzZlLTdkMDZkMTZjN2ZjYSJ9.rJcPReQJ5X1x8IxuB5gnyGaWUrAmXYlLm8oLJShdA40';
+        
+        function authenticate() {
+            localStorage.setItem('access_token', AUTH_TOKEN);
+            document.getElementById('auth-status').innerHTML = '<span class="text-green-400">✅ Authenticated as integration_test@kitako.com</span>';
+        }
+
+        async function loadFiles() {
+            const uploads = [
+                { id: 'f14b71fa-d74e-459e-92b3-c50794a83518', filename: 'mock_bpi_mobile.pdf', transactions: 6 },
+                { id: '163b8e7c-9fa5-4a99-a5dc-a5e0522315c8', filename: 'test_modal_gcash.pdf', transactions: 4 },
+                { id: 'b165033c-e061-4e91-a16e-aa09bab97b2d', filename: 'mock_gcash_statement.pdf', transactions: 5 }
+            ];
+
+            const filesHtml = uploads.map(upload => `
+                <div class="bg-gray-700 rounded-lg p-4 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-medium">${upload.filename}</h3>
+                        <p class="text-sm text-gray-400">${upload.transactions} transactions • Status: awaiting_review</p>
+                        <p class="text-xs text-gray-500">Upload ID: ${upload.id}</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="testAPI('${upload.id}')" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-colors">
+                            Test API
+                        </button>
+                        <a href="http://localhost:5173/upload" class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm transition-colors">
+                            Open App
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('files-list').innerHTML = filesHtml;
+        }
+
+        async function testAPI(uploadId) {
+            try {
+                const response = await fetch(`http://localhost:8000/api/transactions/uploads/${uploadId}/transactions/`, {
+                    headers: {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(`✅ API Test Success!\\n\\nFile: ${data.file_upload.filename}\\nTransactions: ${data.count}\\nStatus: ${data.file_upload.processing_status}`);
+                } else {
+                    alert(`❌ API Test Failed: ${response.status}`);
+                }
+            } catch (error) {
+                alert(`❌ API Test Error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

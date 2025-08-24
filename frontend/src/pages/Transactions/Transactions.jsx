@@ -11,10 +11,13 @@ import {
   TrendingDown,
   Calendar,
   DollarSign,
-  Bot
+  Bot,
+  RefreshCw
 } from 'lucide-react';
 import { transactionAPI, aiAPI, formatCurrency, formatDate } from '../../services/api';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
+import TransactionDetailModal from '../../components/TransactionDetailModal';
+import TransactionEditModal from '../../components/TransactionEditModal';
 import toast from 'react-hot-toast';
 
 const Transactions = () => {
@@ -31,6 +34,8 @@ const Transactions = () => {
   const [selectedTransactions, setSelectedTransactions] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [aiProcessing, setAiProcessing] = useState(false);
+  const [detailModal, setDetailModal] = useState({ isOpen: false, transaction: null });
+  const [editModal, setEditModal] = useState({ isOpen: false, transaction: null });
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -40,6 +45,11 @@ const Transactions = () => {
   useEffect(() => {
     fetchTransactions();
   }, [filters, pagination.page]);
+
+  // Refresh transactions when component mounts (ensures fresh data after approvals)
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
   const fetchTransactions = async () => {
     try {
@@ -118,6 +128,32 @@ const Transactions = () => {
     }
   };
 
+  const handleViewTransaction = (transaction) => {
+    setDetailModal({ isOpen: true, transaction });
+  };
+
+  const handleEditTransaction = (transaction) => {
+    setEditModal({ isOpen: true, transaction });
+  };
+
+  const handleSaveTransaction = async (transactionId, updatedData) => {
+    await transactionAPI.updateTransaction(transactionId, updatedData);
+    fetchTransactions(); // Refresh the list
+  };
+
+  const handleDeleteTransaction = async (transaction) => {
+    if (window.confirm(`Are you sure you want to delete this transaction: ${transaction.description}?`)) {
+      try {
+        await transactionAPI.deleteTransaction(transaction.id);
+        toast.success('Transaction deleted successfully');
+        fetchTransactions(); // Refresh the list
+      } catch (error) {
+        console.error('Failed to delete transaction:', error);
+        toast.error('Failed to delete transaction');
+      }
+    }
+  };
+
   const getTransactionIcon = (type) => {
     switch (type) {
       case 'income':
@@ -159,6 +195,16 @@ const Transactions = () => {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 flex space-x-3">
+          <button
+            onClick={() => fetchTransactions()}
+            disabled={loading}
+            className="btn-secondary inline-flex items-center"
+            title="Refresh transactions"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+          
           {selectedTransactions.length > 0 && (
             <button
               onClick={handleAICategorization}
@@ -185,6 +231,24 @@ const Transactions = () => {
             <Filter className="w-4 h-4 mr-2" />
             Filters
           </button>
+        </div>
+      </div>
+
+      {/* Info Banner */}
+      <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 text-sm text-gray-300">
+        <div className="flex items-start space-x-3">
+          <div className="text-purple-400 mt-0.5">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div>
+            <p className="font-medium text-white">📊 All Your Transactions</p>
+            <p className="mt-1">
+              This shows all your financial transactions, including those extracted from uploaded files. 
+              Transactions appear here immediately after file processing, even before you confirm them in the review step.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -383,16 +447,25 @@ const Transactions = () => {
                   <td className="table-cell">
                     <div className="flex items-center space-x-2">
                       <button
-                        className="p-1 text-gray-400 hover:text-blue-400"
+                        onClick={() => handleViewTransaction(transaction)}
+                        className="p-1 text-gray-400 hover:text-blue-400 transition-colors"
                         title="View Details"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
-                        className="p-1 text-gray-400 hover:text-yellow-400"
+                        onClick={() => handleEditTransaction(transaction)}
+                        className="p-1 text-gray-400 hover:text-yellow-400 transition-colors"
                         title="Edit"
                       >
                         <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTransaction(transaction)}
+                        className="p-1 text-gray-400 hover:text-red-400 transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -446,6 +519,21 @@ const Transactions = () => {
           </div>
         </div>
       )}
+
+      {/* Transaction Detail Modal */}
+      <TransactionDetailModal
+        isOpen={detailModal.isOpen}
+        onClose={() => setDetailModal({ isOpen: false, transaction: null })}
+        transaction={detailModal.transaction}
+      />
+
+      {/* Transaction Edit Modal */}
+      <TransactionEditModal
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal({ isOpen: false, transaction: null })}
+        transaction={editModal.transaction}
+        onSave={handleSaveTransaction}
+      />
     </div>
   );
 };
