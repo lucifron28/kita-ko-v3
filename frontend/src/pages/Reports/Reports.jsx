@@ -4,7 +4,6 @@ import {
   Plus, 
   Download, 
   Eye, 
-  Share, 
   Trash2,
   Calendar,
   DollarSign,
@@ -16,6 +15,7 @@ import {
 import { formatCurrency, formatDate } from '../../services/api';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
 import CreateReportModal from '../../components/Reports/CreateReportModal';
+import ReportStatusModal from '../../components/Reports/ReportStatusModal';
 import { 
   useReports, 
   useCreateReport, 
@@ -26,6 +26,8 @@ import {
 
 const Reports = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
   
   // React Query hooks
   const { data: reports = [], isLoading, error } = useReports();
@@ -57,6 +59,11 @@ const Reports = () => {
   const handleDeleteReport = (reportId) => {
     if (!confirm('Are you sure you want to delete this report?')) return;
     deleteReportMutation.mutate(reportId);
+  };
+
+  const handleViewReport = (report) => {
+    setSelectedReport(report);
+    setShowStatusModal(true);
   };
 
   const getStatusIcon = (status) => {
@@ -255,19 +262,13 @@ const Reports = () => {
                           )}
                           Download
                         </button>
-                        <button
-                          className="btn-secondary text-xs px-3 py-1 inline-flex items-center"
-                          title="Share Report"
-                        >
-                          <Share className="w-3 h-3 mr-1" />
-                          Share
-                        </button>
                       </>
                     )}
                   </div>
 
                   <div className="flex space-x-1">
                     <button
+                      onClick={() => handleViewReport(report)}
                       className="p-1 text-gray-400 hover:text-blue-400"
                       title="View Details"
                     >
@@ -357,11 +358,11 @@ const Reports = () => {
 
             <div className="text-center">
               <div className="w-12 h-12 bg-orange-500 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                <Share className="w-6 h-6 text-white" />
+                <ExternalLink className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-medium text-white mb-1">Easy Sharing</h3>
+              <h3 className="font-medium text-white mb-1">Easy Access</h3>
               <p className="text-sm text-gray-400">
-                Secure links and downloads
+                Quick links and downloads
               </p>
             </div>
           </div>
@@ -373,6 +374,19 @@ const Reports = () => {
         <CreateReportModal
           onClose={() => setShowCreateModal(false)}
           onSubmit={handleCreateReport}
+        />
+      )}
+
+      {/* Report Status Modal */}
+      {showStatusModal && selectedReport && (
+        <ReportStatusModal
+          report={selectedReport}
+          onClose={() => {
+            setShowStatusModal(false);
+            setSelectedReport(null);
+          }}
+          onDownload={handleDownloadReport}
+          onGeneratePDF={handleGeneratePDF}
         />
       )}
     </div>
