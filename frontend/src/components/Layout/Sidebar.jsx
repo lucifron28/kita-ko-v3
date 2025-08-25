@@ -6,9 +6,9 @@ import {
   FileText, 
   User, 
   X,
-  TrendingUp,
   Shield
 } from 'lucide-react';
+import kitakoLogo from '../../assets/images/kitako-logo.png';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigation = [
@@ -57,9 +57,11 @@ const Sidebar = ({ isOpen, onClose }) => {
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-700">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-white" />
-            </div>
+            <img 
+              src={kitakoLogo} 
+              alt="Kitako Logo" 
+              className="w-8 h-8 rounded-lg"
+            />
             <span className="text-xl font-bold text-white">Kitako</span>
           </div>
 
