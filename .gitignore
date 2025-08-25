@@ -36,3 +36,5 @@ build/
 Thumbs.db
 
 mock*
+backend/media/reports/
+backend/logs/
