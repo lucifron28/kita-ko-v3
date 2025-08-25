@@ -3,9 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Eye, EyeOff, TrendingUp, Mail, Lock, User, Briefcase } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Briefcase } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
+import kitakoLogo from '../../assets/images/kitako-logo.png';
 
 const schema = yup.object({
   email: yup
@@ -89,9 +90,11 @@ const Register = () => {
         {/* Header */}
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-8 h-8 text-white" />
-            </div>
+            <img 
+              src={kitakoLogo} 
+              alt="Kitako Logo" 
+              className="w-16 h-16 rounded-xl shadow-lg"
+            />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-white">
             Join Kitako
