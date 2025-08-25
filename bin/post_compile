@@ -3,21 +3,10 @@
 # Heroku build script for full-stack deployment
 echo "Starting Heroku build process..."
 
-# Install frontend dependencies and build
-echo "Building frontend..."
-cd frontend
-npm ci --production=false
-npm run build
-cd ..
+# Frontend is built by Node.js buildpack, so we don't need to do it here
+echo "Frontend will be built by Node.js buildpack..."
 
-echo "Frontend build completed!"
-
-# Install backend dependencies (requirements.txt is in root)
-echo "Installing backend dependencies..."
-pip install -r requirements.txt
-
-# Collect static files
-echo "Collecting static files..."
+echo "Collecting Django static files..."
 cd backend
 python manage.py collectstatic --noinput
 cd ..
