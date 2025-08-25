@@ -104,6 +104,34 @@ class IncomeReport(models.Model):
     # Verification
     document_hash = models.CharField(max_length=64, blank=True, help_text="SHA-256 hash for verification")
     verification_code = models.CharField(max_length=20, blank=True, unique=True)
+    
+    # QR Code Verification and Admin Approval
+    VERIFICATION_STATUS_CHOICES = [
+        ('pending', 'Pending Admin Approval'),
+        ('approved', 'Approved & Verified'),
+        ('rejected', 'Rejected'),
+        ('not_submitted', 'Not Submitted for Verification'),
+    ]
+    
+    is_signature_submitted = models.BooleanField(default=False, help_text="Whether user submitted document for signature verification")
+    signature_verification_status = models.CharField(
+        max_length=20, 
+        choices=VERIFICATION_STATUS_CHOICES, 
+        default='not_submitted',
+        help_text="Admin approval status for document signature"
+    )
+    signature_submitted_at = models.DateTimeField(null=True, blank=True, help_text="When user submitted for verification")
+    signature_approved_at = models.DateTimeField(null=True, blank=True, help_text="When admin approved/rejected")
+    signature_approved_by = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='approved_reports',
+        help_text="Admin who approved/rejected the signature"
+    )
+    admin_notes = models.TextField(blank=True, help_text="Admin notes on verification decision")
+    qr_code_url = models.URLField(blank=True, help_text="URL that QR code points to for verification")
 
     # Status and Metadata
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='generating')
@@ -129,6 +157,8 @@ class IncomeReport(models.Model):
             models.Index(fields=['user', 'status']),
             models.Index(fields=['verification_code']),
             models.Index(fields=['access_token']),
+            models.Index(fields=['signature_verification_status']),
+            models.Index(fields=['is_signature_submitted']),
         ]
 
     def __str__(self):
@@ -146,6 +176,12 @@ class IncomeReport(models.Model):
         # Calculate document hash if PDF exists
         if self.pdf_file and not self.document_hash:
             self.document_hash = self.calculate_file_hash()
+            
+        # Generate QR code verification URL
+        if not self.qr_code_url and self.verification_code:
+            from django.conf import settings
+            base_url = getattr(settings, 'FRONTEND_URL', 'https://kita-ko-2b521254f5f2.herokuapp.com')
+            self.qr_code_url = f"{base_url}/verify/{self.verification_code}"
 
         super().save(*args, **kwargs)
 
@@ -175,6 +211,46 @@ class IncomeReport(models.Model):
         for chunk in self.pdf_file.chunks():
             hash_sha256.update(chunk)
         return hash_sha256.hexdigest()
+    
+    def submit_for_signature_verification(self):
+        """Submit document for admin signature verification"""
+        from django.utils import timezone
+        
+        if not self.is_signature_submitted:
+            self.is_signature_submitted = True
+            self.signature_verification_status = 'pending'
+            self.signature_submitted_at = timezone.now()
+            self.save(update_fields=['is_signature_submitted', 'signature_verification_status', 'signature_submitted_at'])
+    
+    def approve_signature(self, admin_user, notes=""):
+        """Admin approves the document signature"""
+        from django.utils import timezone
+        
+        self.signature_verification_status = 'approved'
+        self.signature_approved_at = timezone.now()
+        self.signature_approved_by = admin_user
+        self.admin_notes = notes
+        self.save(update_fields=['signature_verification_status', 'signature_approved_at', 'signature_approved_by', 'admin_notes'])
+    
+    def reject_signature(self, admin_user, notes=""):
+        """Admin rejects the document signature"""
+        from django.utils import timezone
+        
+        self.signature_verification_status = 'rejected'
+        self.signature_approved_at = timezone.now()
+        self.signature_approved_by = admin_user
+        self.admin_notes = notes
+        self.save(update_fields=['signature_verification_status', 'signature_approved_at', 'signature_approved_by', 'admin_notes'])
+    
+    @property
+    def is_verified(self):
+        """Check if document is verified (approved by admin)"""
+        return self.signature_verification_status == 'approved'
+    
+    @property
+    def verification_url(self):
+        """Get the public verification URL"""
+        return self.qr_code_url
 
     @property
     def is_expired(self):

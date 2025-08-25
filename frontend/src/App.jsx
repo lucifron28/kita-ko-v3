@@ -24,6 +24,7 @@ import Transactions from './pages/Transactions/Transactions';
 import FileUpload from './pages/FileUpload/FileUpload';
 import Reports from './pages/Reports/Reports';
 import Profile from './pages/Profile/Profile';
+import PublicVerification from './pages/PublicVerification';
 import LoadingSpinner from './components/UI/LoadingSpinner';
 
 // Protected Route component
@@ -76,6 +77,12 @@ const AppRoutes = () => {
             <Register />
           </PublicRoute>
         }
+      />
+      
+      {/* Public verification route - no authentication required */}
+      <Route
+        path="/verify/:verificationCode"
+        element={<PublicVerification />}
       />
 
       {/* Protected routes */}

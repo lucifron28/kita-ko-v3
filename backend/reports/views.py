@@ -537,3 +537,128 @@ def delete_report(request, report_id):
             {'error': 'Deletion failed'},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def submit_signature_verification(request, report_id):
+    """
+    Submit a report for signature verification by admin
+    """
+    try:
+        report = get_object_or_404(IncomeReport, id=report_id, user=request.user)
+        
+        # Check if report has PDF file
+        if not report.pdf_file or report.status != 'completed':
+            return Response(
+                {'error': 'Report must be completed with PDF before verification'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if already submitted
+        if report.is_signature_submitted:
+            return Response(
+                {
+                    'message': 'Report already submitted for verification',
+                    'status': report.signature_verification_status
+                }
+            )
+        
+        # Submit for verification
+        report.submit_for_signature_verification()
+        
+        logger.info(f"Report {report_id} submitted for signature verification by {request.user.email}")
+        
+        return Response({
+            'message': 'Report submitted for signature verification',
+            'verification_status': report.signature_verification_status,
+            'qr_code_url': report.qr_code_url,
+            'verification_code': report.verification_code
+        })
+
+    except Exception as e:
+        logger.error(f"Signature verification submission failed: {str(e)}")
+        return Response(
+            {'error': 'Submission failed'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])  # Public access
+def public_verification(request, verification_code):
+    """
+    Public verification page - no authentication required
+    Returns document verification status for QR code scanning
+    """
+    try:
+        report = get_object_or_404(IncomeReport, verification_code=verification_code)
+        
+        verification_data = {
+            'verification_code': verification_code,
+            'document_title': report.title,
+            'created_date': report.created_at.strftime('%B %d, %Y'),
+            'is_verified': report.is_verified,
+            'verification_status': report.get_signature_verification_status_display(),
+            'user_email': report.user.email[:3] + '***@' + report.user.email.split('@')[1],  # Partially masked email
+        }
+        
+        # Add verification details based on status
+        if report.signature_verification_status == 'approved':
+            verification_data.update({
+                'verified': True,
+                'verified_date': report.signature_approved_at.strftime('%B %d, %Y at %I:%M %p') if report.signature_approved_at else None,
+                'message': 'This document has been verified and approved by KitaKo administrators.',
+                'status_class': 'verified'
+            })
+        elif report.signature_verification_status == 'rejected':
+            verification_data.update({
+                'verified': False,
+                'rejected_date': report.signature_approved_at.strftime('%B %d, %Y at %I:%M %p') if report.signature_approved_at else None,
+                'message': 'This document signature was not approved.',
+                'admin_notes': report.admin_notes if report.admin_notes else None,
+                'status_class': 'rejected'
+            })
+        elif report.signature_verification_status == 'pending':
+            verification_data.update({
+                'verified': False,
+                'message': 'This document is currently under review by KitaKo administrators.',
+                'status_class': 'pending'
+            })
+        else:
+            verification_data.update({
+                'verified': False,
+                'message': 'This document has not been submitted for signature verification.',
+                'status_class': 'not_submitted'
+            })
+        
+        # Add document hash for technical verification
+        verification_data['document_hash'] = report.document_hash[:16] + '...' if report.document_hash else None
+        
+        logger.info(f"Public verification accessed for code {verification_code}")
+        
+        return Response(verification_data)
+
+    except IncomeReport.DoesNotExist:
+        logger.warning(f"Invalid verification code accessed: {verification_code}")
+        return Response(
+            {
+                'error': 'Invalid verification code',
+                'message': 'The verification code you provided is not valid.',
+                'verified': False,
+                'status_class': 'invalid'
+            },
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    except Exception as e:
+        logger.error(f"Public verification failed: {str(e)}")
+        return Response(
+            {
+                'error': 'Verification failed',
+                'message': 'Unable to verify document at this time.',
+                'verified': False,
+                'status_class': 'error'
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

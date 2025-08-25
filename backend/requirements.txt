@@ -25,6 +25,7 @@ python-dotenv>=1.0.0
 
 # PDF generation
 reportlab>=4.0.0
+qrcode>=7.4.0
 
 # Security and encryption
 cryptography>=41.0.0

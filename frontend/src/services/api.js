@@ -187,6 +187,8 @@ export const reportsAPI = {
     return api.get(url, { responseType: 'blob' });
   },
   verifyReport: (data) => api.post('/reports/verify/', data),
+  submitForVerification: (id) => api.post(`/reports/${id}/submit-verification/`),
+  publicVerification: (verificationCode) => api.get(`/reports/verify-public/${verificationCode}/`),
   getAnalytics: () => api.get('/reports/analytics/'),
 };
 

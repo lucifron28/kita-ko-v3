@@ -15,7 +15,8 @@ import {
   RefreshCw,
   Shield,
   Users,
-  TrendingUp
+  TrendingUp,
+  QrCode
 } from 'lucide-react';
 import { reportsAPI, formatCurrency, formatDate, downloadFile } from '../../services/api';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
@@ -202,17 +203,60 @@ const Reports = () => {
     }
   };
 
-  const handleDeleteReport = async (reportId) => {
-    if (!confirm('Are you sure you want to delete this report? This action cannot be undone.')) return;
+    const handleDeleteReport = async (reportId) => {
+    if (!confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
+      return;
+    }
 
     try {
       await reportsAPI.deleteReport(reportId);
-      setReports(prev => prev.filter(report => report.id !== reportId));
-      toast.success('Report deleted successfully!');
-      fetchAnalytics(); // Refresh analytics
+      toast.success('Report deleted successfully');
+      fetchReports(); // Refresh the list
+      fetchAnalytics();
     } catch (error) {
       console.error('Failed to delete report:', error);
       toast.error('Failed to delete report');
+    }
+  };
+
+  const handleSubmitForVerification = async (reportId) => {
+    if (!confirm('Submit this document for signature verification? This will send it to administrators for review.')) {
+      return;
+    }
+
+    try {
+      const response = await reportsAPI.submitForVerification(reportId);
+      toast.success('Document submitted for verification!');
+      
+      // Update the report in the list
+      setReports(prev => prev.map(report => 
+        report.id === reportId 
+          ? { 
+              ...report, 
+              is_signature_submitted: true,
+              signature_verification_status: 'pending',
+              qr_code_url: response.data.qr_code_url
+            }
+          : report
+      ));
+      
+    } catch (error) {
+      console.error('Failed to submit for verification:', error);
+      const errorMessage = error.response?.data?.error || 'Failed to submit for verification';
+      toast.error(errorMessage);
+    }
+  };
+
+  const getVerificationStatusIcon = (status) => {
+    switch (status) {
+      case 'approved':
+        return <Shield className="w-4 h-4 text-green-600" />;
+      case 'rejected':
+        return <AlertCircle className="w-4 h-4 text-red-600" />;
+      case 'pending':
+        return <Clock className="w-4 h-4 text-yellow-600" />;
+      default:
+        return <QrCode className="w-4 h-4 text-gray-500" />;
     }
   };
 
@@ -420,13 +464,39 @@ const Reports = () => {
                   </button>
 
                   {report.status === 'completed' && report.pdf_url ? (
-                    <button
-                      onClick={() => handleDownloadReport(report)}
-                      className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-colors"
-                      title="Download PDF"
-                    >
-                      <Download className="w-4 h-4" />
-                    </button>
+                    <>
+                      <button
+                        onClick={() => handleDownloadReport(report)}
+                        className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-colors"
+                        title="Download PDF"
+                      >
+                        <Download className="w-4 h-4" />
+                      </button>
+                      
+                      {/* QR Code Verification Button */}
+                      {!report.is_signature_submitted ? (
+                        <button
+                          onClick={() => handleSubmitForVerification(report.id)}
+                          className="p-2 text-purple-600 hover:text-purple-700 hover:bg-purple-100 rounded-lg transition-colors"
+                          title="Submit for Signature Verification"
+                        >
+                          <QrCode className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <div className="relative group">
+                          <div className="p-2 rounded-lg cursor-help" title={`Verification Status: ${report.signature_verification_status?.charAt(0).toUpperCase() + report.signature_verification_status?.slice(1)}`}>
+                            {getVerificationStatusIcon(report.signature_verification_status)}
+                          </div>
+                          {report.qr_code_url && (
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                              <a href={report.qr_code_url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                View Verification Page
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <button
                       onClick={() => handleGeneratePDF(report.id)}

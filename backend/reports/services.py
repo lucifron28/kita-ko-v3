@@ -11,11 +11,12 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Dict, List, Any, Optional
 
+import qrcode
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, TA_JUSTIFY
 from django.conf import settings
@@ -90,6 +91,42 @@ class IncomeReportGenerator:
         except Exception as e:
             logger.error(f"Error generating AI insights: {str(e)}")
             return "AI insights generation encountered an error. Manual review recommended."
+    
+    def _generate_qr_code_image(self, report: 'IncomeReport') -> Optional[Image]:
+        """Generate QR code image for document verification"""
+        try:
+            # Create QR code
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            
+            # Add verification URL to QR code
+            if report.qr_code_url:
+                qr.add_data(report.qr_code_url)
+                qr.make(fit=True)
+                
+                # Create QR code image
+                qr_img = qr.make_image(fill_color="black", back_color="white")
+                
+                # Save to memory buffer
+                buffer = io.BytesIO()
+                qr_img.save(buffer, format='PNG')
+                buffer.seek(0)
+                
+                # Create ReportLab Image
+                qr_image = Image(buffer)
+                qr_image.drawWidth = 1.5 * inch
+                qr_image.drawHeight = 1.5 * inch
+                
+                return qr_image
+                
+        except Exception as e:
+            logger.error(f"Error generating QR code: {str(e)}")
+        
+        return None
     
     def _setup_custom_styles(self):
         """Setup custom paragraph styles"""
@@ -513,6 +550,53 @@ class IncomeReportGenerator:
         ]))
         
         story.append(notary_signature_table)
+        story.append(Spacer(1, 40))
+        
+        # QR Code Verification Section
+        verification_title = Paragraph("DOCUMENT VERIFICATION", self.styles['CustomSubtitle'])
+        story.append(verification_title)
+        
+        # Generate QR code
+        qr_image = self._generate_qr_code_image(report)
+        
+        if qr_image:
+            verification_text = f"""
+            <b>Scan QR Code to Verify Document Authenticity</b><br/><br/>
+            This document can be verified online using the QR code below or by visiting:<br/>
+            <b>{report.qr_code_url}</b><br/><br/>
+            Verification Code: <b>{report.verification_code}</b><br/>
+            Document Hash: <font name="Courier">{report.document_hash[:32]}...</font><br/><br/>
+            <b>Verification Status:</b> {report.get_signature_verification_status_display()}
+            """
+            
+            verification_paragraph = Paragraph(verification_text, self.styles['CustomBody'])
+            
+            # Create table with QR code and text
+            verification_data = [
+                [qr_image, verification_paragraph]
+            ]
+            
+            verification_table = Table(verification_data, colWidths=[2*inch, 4.5*inch])
+            verification_table.setStyle(TableStyle([
+                ('ALIGN', (0, 0), (0, 0), 'CENTER'),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('LEFTPADDING', (1, 0), (1, 0), 20),
+            ]))
+            
+            story.append(verification_table)
+        else:
+            # Fallback if QR code generation fails
+            verification_text = f"""
+            <b>Document Verification Information</b><br/><br/>
+            Verification Code: <b>{report.verification_code}</b><br/>
+            Document Hash: <font name="Courier">{report.document_hash[:32]}...</font><br/>
+            Verification URL: {report.qr_code_url}<br/><br/>
+            <b>Verification Status:</b> {report.get_signature_verification_status_display()}
+            """
+            
+            verification_paragraph = Paragraph(verification_text, self.styles['CustomBody'])
+            story.append(verification_paragraph)
+        
         story.append(Spacer(1, 20))
         
         return story
