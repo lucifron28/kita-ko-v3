@@ -117,11 +117,15 @@ if os.getenv('DATABASE_URL'):
         )
     }
 else:
-    # Development database configuration
+    # Development database configuration (PostgreSQL)
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'kitako_dev',
+            'USER': 'ron',
+            'PASSWORD': '',  # No password for local development
+            'HOST': 'localhost',
+            'PORT': '5432',
         }
     }
 
