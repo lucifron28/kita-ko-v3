@@ -1,0 +1,28 @@
+Kitako – 60‑Second Demo Script (Accurate to MVP)
+
+0:00 – Title
+“Kitako: AI‑assisted proof‑of‑income for informal workers.”
+
+0:03 – Login
+“Log in to the web app. The UI uses a dark theme and JWT auth.”
+
+0:06 – Upload
+“Go to Upload. Add a bank/e‑wallet statement PDF or CSV. The backend stores a FileUpload record and starts processing.”
+
+0:12 – Extraction & Review
+“Transactions are extracted with LLM‑assist or rule fallback. The system moves the file to ‘awaiting_review’. Open the Review modal to edit categories, amounts, or descriptions, then approve.”
+
+0:22 – Reports
+“Create a report for a date range and purpose. Generate PDF. The backend builds a professional ReportLab PDF with income breakdown, summary, and a QR code.”
+
+0:32 – QR Verification
+“Scan the QR or visit the public verification page at /verify/<code>. The PDF no longer prints a verification status—verification is live on the website and can be updated by admins.”
+
+0:42 – Download & Share
+“Download the PDF from Reports. Lenders verify authenticity online using the QR; no reprints required.”
+
+0:48 – Security & Stack
+“Django + DRF backend with PostgreSQL; React + Vite frontend. File‑type limits, rate limiting, and audit logging are enabled. AI via OpenRouter when credits are available; graceful fallbacks exist.”
+
+0:56 – Close
+“Kitako converts alternative financial traces into verifiable proof‑of‑income—helping lenders assess fairly and borrowers access ethical credit.”

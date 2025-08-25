@@ -212,6 +212,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+# Add Heroku domain to CORS if in production
+FRONTEND_URL = os.getenv('FRONTEND_URL')
+if FRONTEND_URL:
+    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+
 CORS_ALLOW_CREDENTIALS = True
 
 # Media files (uploaded files)
@@ -336,10 +341,7 @@ if not DEBUG:
     
     # CORS settings for production
     CORS_ALLOW_ALL_ORIGINS = False
-    CORS_ALLOWED_ORIGINS = [
-        # Add your Heroku app domain here after deployment
-        # "https://your-app-name.herokuapp.com",
-    ]
+    # CORS_ALLOWED_ORIGINS is already set above with FRONTEND_URL
 
 # Data Retention Policy
 DATA_RETENTION_DAYS = 2555  # 7 years for financial data

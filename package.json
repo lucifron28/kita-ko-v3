@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "AI-powered proof-of-income platform for informal earners",
   "engines": {
-    "node": "18.x",
-    "npm": "9.x"
+    "node": "20.x",
+    "npm": "10.x"
   },
   "scripts": {
     "build": "cd frontend && npm install && npm run build",

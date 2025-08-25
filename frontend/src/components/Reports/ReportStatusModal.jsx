@@ -22,14 +22,15 @@ import toast from 'react-hot-toast';
 const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
   const [reportDetails, setReportDetails] = useState(report);
   const [loading, setLoading] = useState(false);
-  const [statusPolling, setStatusPolling] = useState(false);
 
   useEffect(() => {
-    if (report.status === 'generating') {
-      startStatusPolling();
-    }
     fetchReportDetails();
   }, [report.id]);
+
+  useEffect(() => {
+    // Update local state when report prop changes (e.g., after PDF generation)
+    setReportDetails(report);
+  }, [report]);
 
   const fetchReportDetails = async () => {
     try {
@@ -42,45 +43,6 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const startStatusPolling = () => {
-    if (statusPolling) return;
-    
-    setStatusPolling(true);
-    const interval = setInterval(async () => {
-      try {
-        const response = await reportsAPI.getReportStatus(report.id);
-        const status = response.data;
-        
-        setReportDetails(prev => ({
-          ...prev,
-          status: status.status,
-          pdf_url: status.pdf_available ? prev.pdf_url : null
-        }));
-
-        if (status.status === 'completed' || status.status === 'failed') {
-          clearInterval(interval);
-          setStatusPolling(false);
-          fetchReportDetails(); // Get full updated details
-          
-          if (status.status === 'completed') {
-            toast.success('PDF generated successfully!');
-          } else if (status.status === 'failed') {
-            toast.error(`PDF generation failed: ${status.message}`);
-          }
-        }
-      } catch (error) {
-        console.error('Status polling error:', error);
-        clearInterval(interval);
-        setStatusPolling(false);
-      }
-    }, 2000);
-
-    return () => {
-      clearInterval(interval);
-      setStatusPolling(false);
-    };
   };
 
   const getStatusIcon = (status) => {

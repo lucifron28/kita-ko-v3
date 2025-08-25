@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Menu, Bell, User, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useProfile } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 
 const Header = ({ onMenuClick }) => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const { data: user } = useProfile();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -66,7 +68,9 @@ const Header = ({ onMenuClick }) => {
               <User className="w-4 h-4 text-white" />
             </div>
             <span className="hidden sm:block text-sm font-medium text-white">
-              {user?.full_name || `${user?.first_name} ${user?.last_name}` || 'User'}
+              {user?.full_name || 
+                (user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.first_name) || 
+                'User'}
             </span>
           </button>
 
@@ -77,7 +81,9 @@ const Header = ({ onMenuClick }) => {
                 {/* User info */}
                 <div className="px-4 py-2 border-b border-gray-700">
                   <p className="text-sm font-medium text-white">
-                    {user?.full_name || `${user?.first_name} ${user?.last_name}` || 'User'}
+                    {user?.full_name || 
+                      (user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.first_name) || 
+                      'User'}
                   </p>
                   <p className="text-xs text-gray-400">{user?.email}</p>
                 </div>

@@ -4,8 +4,32 @@ import {
   Plus, 
   Download, 
   Eye, 
-  Trash2,
-  Calendar,
+  Tr        // Update status to generating
+        setReports(prev => prev.map(report => 
+          report.id === reportId 
+            ? { ...report, status: 'generating' }
+            : report
+        ));
+        
+        // PDF generation is now synchronous, wait for completion
+        const response = await reportsAPI.generatePDF({ report_id: reportId });
+        const updatedReport = response.data.report;
+        
+        // Update the report with completed status
+        setReports(prev => prev.map(report => 
+          report.id === reportId ? updatedReport : report
+        ));
+        
+        if (updatedReport.status === 'completed') {
+          toast.success('PDF generated successfully!');
+        } else if (updatedReport.status === 'failed') {
+          toast.error(`PDF generation failed: ${updatedReport.generation_error || 'Unknown error'}`);
+        }
+        
+        // Update modal if open
+        if (selectedReport?.id === reportId) {
+          setSelectedReport(updatedReport);
+        }ar,
   DollarSign,
   CheckCircle,
   Clock,

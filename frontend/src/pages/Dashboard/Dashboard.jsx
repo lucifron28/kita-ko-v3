@@ -11,13 +11,12 @@ import {
   Plus,
   AlertCircle
 } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
 import { formatCurrency, formatDate } from '../../services/api';
-import { useDashboard } from '../../hooks/useAuth';
+import { useDashboard, useProfile } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { data: user } = useProfile();
   const { data: dashboardData, isLoading, error } = useDashboard();
 
   if (isLoading) {

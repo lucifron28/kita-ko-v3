@@ -10,6 +10,7 @@ from decimal import Decimal
 import logging
 
 from .models import IncomeReport
+from .services import IncomeReportGenerator
 from .serializers import (
     IncomeReportCreateSerializer,
     IncomeReportSerializer,
@@ -293,27 +294,26 @@ def generate_pdf_report(request):
         report.generation_error = ''  # Clear any previous errors
         report.save(update_fields=['status', 'generation_error'])
 
-        # Start background PDF generation
-        from threading import Thread
+        # Generate PDF directly (synchronous for now to avoid thread issues)
+        try:
+            generator = IncomeReportGenerator()
+            success = generator.generate_report(report)
+            
+            if success:
+                logger.info(f"PDF generation completed for report {report.id}")
+            else:
+                logger.error(f"PDF generation failed for report {report.id}")
+        except Exception as e:
+            logger.error(f"PDF generation failed: {str(e)}")
+            report.status = 'failed'
+            report.generation_error = str(e)
+            report.save(update_fields=['status', 'generation_error'])
         
-        def generate_pdf_background():
-            try:
-                generator = IncomeReportGenerator()
-                generator.generate_report(report)
-                logger.info(f"Background PDF generation completed for report {report.id}")
-            except Exception as e:
-                logger.error(f"Background PDF generation failed: {str(e)}")
-                # The generator already handles error status updates
-        
-        # Start generation in background thread
-        thread = Thread(target=generate_pdf_background)
-        thread.daemon = True
-        thread.start()
-        
-        # Return immediately with status
+        # Return updated report data
+        report.refresh_from_db()
         return Response(
             {
-                'message': 'PDF generation started',
+                'message': 'PDF generation completed',
                 'report': IncomeReportSerializer(report, context={'request': request}).data
             }
         )

@@ -16,6 +16,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useProfile } from '../../hooks/useAuth';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
 
 // Validation schemas
@@ -49,7 +50,8 @@ const passwordSchema = yup.object({
 });
 
 const Profile = () => {
-  const { user, updateProfile, changePassword } = useAuth();
+  const { updateProfile, changePassword } = useAuth();
+  const { data: user, isLoading } = useProfile();
   const [activeTab, setActiveTab] = useState('profile');
   const [showPasswords, setShowPasswords] = useState({
     old: false,
@@ -102,6 +104,14 @@ const Profile = () => {
     { id: 'financial', label: 'Financial Information', icon: CreditCard },
     { id: 'security', label: 'Security', icon: Lock },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

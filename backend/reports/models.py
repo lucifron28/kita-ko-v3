@@ -25,6 +25,7 @@ class IncomeReport(models.Model):
     ]
 
     STATUS_CHOICES = [
+        ('draft', 'Draft'),
         ('generating', 'Generating'),
         ('completed', 'Completed'),
         ('failed', 'Failed'),
@@ -134,7 +135,7 @@ class IncomeReport(models.Model):
     qr_code_url = models.URLField(blank=True, help_text="URL that QR code points to for verification")
 
     # Status and Metadata
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='generating')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     generation_error = models.TextField(blank=True)
 
     # Access Control

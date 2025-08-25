@@ -35,6 +35,19 @@ build/
 .DS_Store
 Thumbs.db
 
+# Mock files and test data
 mock*
+
+# Media and logs
 backend/media/reports/
 backend/logs/
+
+# Documentation build files
+*.aux
+*.log
+*.out
+*.pdf
+kitako-documentation.*
+
+# Backup files
+*.backup
