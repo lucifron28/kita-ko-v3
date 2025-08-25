@@ -49,5 +49,17 @@ backend/logs/
 *.pdf
 kitako-documentation.*
 
+# Development and temporary files
+documentation.txt
+cookies.txt
+*_COMPLETE.md
+*_IMPLEMENTATION.md
+DEPLOYMENT.md
+PRODUCTION_STATUS.md
+test_api_endpoints.py
+transaction-review-test.html
+demo_transaction_review.sh
+**/test.txt
+
 # Backup files
 *.backup

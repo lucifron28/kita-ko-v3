@@ -131,12 +131,78 @@ This comprehensive script:
 ```
 
 **Application URLs after setup:**
-- **🌐 Frontend**: http://localhost:5173
-- **🔌 Backend API**: http://localhost:8000/api
-- **👑 Admin Panel**: http://localhost:8000/admin
-- **📖 API Documentation**: http://localhost:8000/api/docs
+- ** Frontend**: http://localhost:5173
+- ** Backend API**: http://localhost:8000/api
+- ** Admin Panel**: http://localhost:8000/admin
+- ** API Documentation**: http://localhost:8000/api/docs
 
-## 📋 Manual Setup
+## Sample Documents for Testing
+
+Kitako includes a comprehensive collection of **realistic Filipino financial documents** for testing and demonstration purposes. These documents are specifically designed to showcase the platform's capabilities with authentic-looking data.
+
+### Quick Test with Sample Documents
+
+1. **Start the application** using any of the quick start methods above
+2. **Register/Login** to your account
+3. **Navigate to File Upload** page
+4. **Use sample documents** from the `/sample-documents/` folder:
+
+```bash
+# Available sample documents:
+sample-documents/
+├── 📄 mock_bpi_statement.pdf      # Professional BPI bank statement
+├── 📄 mock_gcash_statement.pdf    # GCash transaction history  
+├── 📄 mock_paymaya_statement.pdf  # PayMaya digital wallet statement
+├── 📄 mock_gcash_mobile.pdf       # Mobile app transaction receipt
+├── 📄 mock_bpi_mobile.pdf         # Mobile banking account view
+├── 📊 mock_bank_export.csv        # CSV transaction export
+├── 📋 mock_receipts.txt           # Text-based receipts collection
+├── 🗂️ mock_bank_data.json         # Structured JSON financial data
+└── 📖 README.md                   # Detailed documentation
+```
+
+### Test Scenarios
+
+#### **Scenario 1: Complete Bank Statement Analysis**
+1. Upload `mock_bpi_statement.pdf` 
+2. Watch AI categorize transactions automatically
+3. Review and approve processed data
+4. Generate professional income report
+5. Download PDF with QR verification
+
+#### **Scenario 2: Mobile Banking Integration**  
+1. Upload `mock_gcash_mobile.pdf`
+2. Experience mobile receipt parsing
+3. See real-time transaction extraction
+4. Verify AI-powered categorization accuracy
+
+#### **Scenario 3: Multi-Format Data Processing**
+1. Upload `mock_bank_export.csv` for structured data
+2. Add `mock_receipts.txt` for text parsing
+3. Include `mock_paymaya_statement.pdf` for comparison
+4. Generate comprehensive financial analysis
+
+### 📊 Expected Results from Sample Data
+- **📈 Total Income**: ~₱49,880.00
+- **📉 Total Expenses**: ~₱32,180.00  
+- **💰 Net Income**: ~₱17,700.00
+- **📝 Transactions**: 20-25 realistic Filipino transactions
+- **🏷️ Categories**: 12+ expense/income categories (groceries, transportation, utilities, etc.)
+- **📅 Period**: 30-day transaction history
+- **🏦 Platforms**: BPI, GCash, PayMaya representation
+
+### 🔍 What You'll Experience
+- **🤖 AI Categorization**: Watch Claude 3 intelligently categorize Filipino transactions
+- **📱 Mobile Optimization**: Test responsive design across different document formats
+- **📄 Professional Reports**: Generate bank-quality PDF reports with verification codes
+- **🔐 Security Features**: Experience encrypted processing and secure file handling
+- **📊 Analytics**: View comprehensive financial insights and trends
+
+**💡 Pro Tip**: For the most realistic experience, upload documents in the order you'd naturally receive them (bank statement → mobile receipts → CSV exports) to see how Kitako handles mixed data sources.
+
+** Detailed Documentation**: See [`sample-documents/README.md`](sample-documents/README.md) for complete technical specifications and advanced testing scenarios.
+
+## Manual Setup
 
 If you prefer manual setup or need to troubleshoot: & Setup
 
@@ -458,6 +524,18 @@ kita-ko-v3/
 │   │   └── 📁 styles/         # Tailwind CSS configuration
 │   ├── 📄 package.json       # Node.js dependencies
 │   └── 📄 vite.config.js      # Vite build configuration
+├── 📁 sample-documents/       # 🎯 Realistic test documents
+│   ├── 📄 mock_bpi_statement.pdf      # BPI bank statement
+│   ├── 📄 mock_gcash_statement.pdf    # GCash transactions  
+│   ├── 📄 mock_paymaya_statement.pdf  # PayMaya statement
+│   ├── 📄 mock_gcash_mobile.pdf       # Mobile app receipt
+│   ├── 📄 mock_bpi_mobile.pdf         # Mobile banking view
+│   ├── 📊 mock_bank_export.csv        # CSV transaction data
+│   ├── 📋 mock_receipts.txt           # Text receipts
+│   ├── 🗂️ mock_bank_data.json         # JSON financial data
+│   ├── 🛠️ mock_financial_document.py   # PDF generator
+│   ├── 🛠️ mock_mobile_banking.py       # Mobile generator
+│   └── 📖 README.md                   # Testing documentation
 ├── 📁 bin/                   # Deployment scripts
 │   └── 📄 post_compile       # Heroku build hook
 ├── 📄 run_app.sh            # Full application launcher
