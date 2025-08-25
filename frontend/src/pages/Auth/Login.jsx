@@ -4,6 +4,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 import { authAPI } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import kitakoLogo from '../../assets/images/kitako-logo.png';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -59,9 +60,11 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-xl">K</span>
-          </div>
+          <img 
+            src={kitakoLogo} 
+            alt="Kitako Logo" 
+            className="mx-auto h-16 w-16 rounded-lg shadow-lg"
+          />
           <h2 className="mt-6 text-3xl font-extrabold text-white">
             Welcome back
           </h2>
