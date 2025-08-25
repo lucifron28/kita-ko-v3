@@ -99,35 +99,35 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return 'text-green-700 bg-green-100';
+        return 'text-green-200 bg-green-900/50 border border-green-800';
       case 'generating':
-        return 'text-yellow-700 bg-yellow-100';
+        return 'text-yellow-200 bg-yellow-900/50 border border-yellow-800';
       case 'failed':
-        return 'text-red-700 bg-red-100';
+        return 'text-red-200 bg-red-900/50 border border-red-800';
       default:
-        return 'text-gray-700 bg-gray-100';
+        return 'text-gray-200 bg-gray-700 border border-gray-600';
     }
   };
 
   const getConfidenceColor = (score) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 80) return 'text-green-400';
+    if (score >= 60) return 'text-yellow-400';
+    return 'text-red-400';
   };
 
   const renderIncomeBreakdown = () => {
     if (!reportDetails.income_breakdown || Object.keys(reportDetails.income_breakdown).length === 0) {
-      return <p className="text-gray-500 text-sm">No income data available</p>;
+      return <p className="text-gray-400 text-sm">No income data available</p>;
     }
 
     return (
       <div className="space-y-2">
         {Object.entries(reportDetails.income_breakdown).map(([category, amount]) => (
           <div key={category} className="flex justify-between items-center">
-            <span className="text-sm text-gray-600 capitalize">
+            <span className="text-sm text-gray-300 capitalize">
               {category.replace('_', ' ')}
             </span>
-            <span className="text-sm font-medium">
+            <span className="text-sm font-medium text-gray-200">
               {formatCurrency(amount)}
             </span>
           </div>
@@ -139,7 +139,7 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <div className="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4 border border-gray-700">
           <div className="flex justify-center">
             <LoadingSpinner />
           </div>
@@ -150,13 +150,13 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center space-x-3">
             {getStatusIcon(reportDetails.status)}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-white">
                 {reportDetails.title}
               </h2>
               <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(reportDetails.status)}`}>
@@ -166,7 +166,7 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-400 hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -177,37 +177,37 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
           {/* Report Overview */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900 flex items-center">
+              <h3 className="text-lg font-medium text-white flex items-center">
                 <Calendar className="w-5 h-5 mr-2" />
                 Report Details
               </h3>
               
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Period:</span>
-                  <span className="font-medium">
+                  <span className="text-gray-400">Period:</span>
+                  <span className="font-medium text-gray-200">
                     {formatDate(reportDetails.date_from)} - {formatDate(reportDetails.date_to)}
                   </span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Purpose:</span>
-                  <span className="font-medium capitalize">
+                  <span className="text-gray-400">Purpose:</span>
+                  <span className="font-medium capitalize text-gray-200">
                     {reportDetails.purpose?.replace('_', ' ')}
                   </span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Created:</span>
-                  <span className="font-medium">
+                  <span className="text-gray-400">Created:</span>
+                  <span className="font-medium text-gray-200">
                     {formatDateTime(reportDetails.created_at)}
                   </span>
                 </div>
                 
                 {reportDetails.completed_at && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Completed:</span>
-                    <span className="font-medium">
+                    <span className="text-gray-400">Completed:</span>
+                    <span className="font-medium text-gray-200">
                       {formatDateTime(reportDetails.completed_at)}
                     </span>
                   </div>
@@ -216,36 +216,36 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900 flex items-center">
+              <h3 className="text-lg font-medium text-white flex items-center">
                 <DollarSign className="w-5 h-5 mr-2" />
                 Financial Summary
               </h3>
               
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Total Income:</span>
-                  <span className="font-medium text-green-600">
+                  <span className="text-gray-400">Total Income:</span>
+                  <span className="font-medium text-green-400">
                     {reportDetails.formatted_total_income || formatCurrency(reportDetails.total_income)}
                   </span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Total Expenses:</span>
-                  <span className="font-medium text-red-600">
+                  <span className="text-gray-400">Total Expenses:</span>
+                  <span className="font-medium text-red-400">
                     {formatCurrency(reportDetails.total_expenses)}
                   </span>
                 </div>
                 
-                <div className="flex justify-between border-t pt-2">
-                  <span className="text-gray-600 font-medium">Net Income:</span>
-                  <span className={`font-semibold ${reportDetails.net_income >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="flex justify-between border-t border-gray-700 pt-2">
+                  <span className="text-gray-300 font-medium">Net Income:</span>
+                  <span className={`font-semibold ${reportDetails.net_income >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {reportDetails.formatted_net_income || formatCurrency(reportDetails.net_income)}
                   </span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Avg Monthly:</span>
-                  <span className="font-medium">
+                  <span className="text-gray-400">Avg Monthly:</span>
+                  <span className="font-medium text-gray-200">
                     {formatCurrency(reportDetails.average_monthly_income)}
                   </span>
                 </div>
@@ -254,21 +254,21 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
           </div>
 
           {/* Data Quality */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center mb-4">
+          <div className="border-t border-gray-700 pt-6">
+            <h3 className="text-lg font-medium text-white flex items-center mb-4">
               <Database className="w-5 h-5 mr-2" />
               Data Quality & Sources
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gray-700 p-4 rounded-lg border border-gray-600">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">Confidence Score</span>
+                  <span className="text-sm text-gray-300">Confidence Score</span>
                   <span className={`text-sm font-bold ${getConfidenceColor(reportDetails.confidence_score)}`}>
                     {reportDetails.confidence_score}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-600 rounded-full h-2">
                   <div
                     className={`h-2 rounded-full ${
                       reportDetails.confidence_score >= 80 ? 'bg-green-500' :
@@ -279,20 +279,20 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
                 </div>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <span className="text-sm text-gray-600">Transactions</span>
-                <p className="text-xl font-bold text-gray-900">
+              <div className="bg-gray-700 p-4 rounded-lg border border-gray-600">
+                <span className="text-sm text-gray-300">Transactions</span>
+                <p className="text-xl font-bold text-white">
                   {reportDetails.transaction_count}
                 </p>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <span className="text-sm text-gray-600">Data Sources</span>
-                <p className="text-xl font-bold text-gray-900">
+              <div className="bg-gray-700 p-4 rounded-lg border border-gray-600">
+                <span className="text-sm text-gray-300">Data Sources</span>
+                <p className="text-xl font-bold text-white">
                   {reportDetails.data_sources?.length || 0}
                 </p>
                 {reportDetails.data_sources && reportDetails.data_sources.length > 0 && (
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     {reportDetails.data_sources.join(', ')}
                   </p>
                 )}
@@ -302,12 +302,12 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
 
           {/* Income Breakdown */}
           {reportDetails.income_breakdown && Object.keys(reportDetails.income_breakdown).length > 0 && (
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 flex items-center mb-4">
+            <div className="border-t border-gray-700 pt-6">
+              <h3 className="text-lg font-medium text-white flex items-center mb-4">
                 <TrendingUp className="w-5 h-5 mr-2" />
                 Income Breakdown
               </h3>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-gray-700 p-4 rounded-lg border border-gray-600">
                 {renderIncomeBreakdown()}
               </div>
             </div>
@@ -315,13 +315,13 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
 
           {/* AI Insights */}
           {reportDetails.ai_insights && (
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 flex items-center mb-4">
+            <div className="border-t border-gray-700 pt-6">
+              <h3 className="text-lg font-medium text-white flex items-center mb-4">
                 <Brain className="w-5 h-5 mr-2" />
                 AI Analysis
               </h3>
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <div className="whitespace-pre-line text-sm text-blue-800">
+              <div className="bg-blue-900/30 p-4 rounded-lg border border-blue-800">
+                <div className="whitespace-pre-line text-sm text-blue-200">
                   {reportDetails.ai_insights}
                 </div>
               </div>
@@ -330,15 +330,15 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
 
           {/* Anomalies */}
           {reportDetails.anomalies_detected && reportDetails.anomalies_detected.length > 0 && (
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 flex items-center mb-4">
+            <div className="border-t border-gray-700 pt-6">
+              <h3 className="text-lg font-medium text-white flex items-center mb-4">
                 <AlertCircle className="w-5 h-5 mr-2" />
                 Detected Anomalies
               </h3>
-              <div className="bg-yellow-50 p-4 rounded-lg">
+              <div className="bg-yellow-900/30 p-4 rounded-lg border border-yellow-800">
                 <ul className="list-disc list-inside space-y-1">
                   {reportDetails.anomalies_detected.map((anomaly, index) => (
-                    <li key={index} className="text-sm text-yellow-800">{anomaly}</li>
+                    <li key={index} className="text-sm text-yellow-200">{anomaly}</li>
                   ))}
                 </ul>
               </div>
@@ -346,13 +346,13 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
           )}
 
           {/* Legal Notice */}
-          <div className="border-t pt-6">
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="border-t border-gray-700 pt-6">
+            <div className="bg-amber-900/30 border border-amber-800 rounded-lg p-4">
               <div className="flex items-start space-x-3">
-                <Shield className="w-5 h-5 text-amber-600 mt-0.5" />
+                <Shield className="w-5 h-5 text-amber-400 mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-amber-800">Legal Validity Notice</h4>
-                  <p className="text-sm text-amber-700 mt-1">
+                  <h4 className="font-medium text-amber-200">Legal Validity Notice</h4>
+                  <p className="text-sm text-amber-300 mt-1">
                     This is a preliminary document that requires notarization for legal validity. 
                     The generated PDF includes signature sections and notary acknowledgment forms 
                     for official use.
@@ -364,9 +364,9 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
-          <div className="text-sm text-gray-500">
-            Verification Code: <span className="font-mono font-medium">{reportDetails.verification_code}</span>
+        <div className="flex items-center justify-between p-6 border-t border-gray-700 bg-gray-800">
+          <div className="text-sm text-gray-400">
+            Verification Code: <span className="font-mono font-medium text-gray-300">{reportDetails.verification_code}</span>
           </div>
           
           <div className="flex items-center space-x-3">
@@ -387,7 +387,7 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
                 <span>Generate PDF</span>
               </button>
             ) : (
-              <div className="flex items-center space-x-2 text-yellow-600">
+              <div className="flex items-center space-x-2 text-yellow-400">
                 <RefreshCw className="w-4 h-4 animate-spin" />
                 <span>Generating PDF...</span>
               </div>
@@ -395,7 +395,7 @@ const ReportStatusModal = ({ report, onClose, onDownload, onGeneratePDF }) => {
             
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-gray-300 bg-gray-700 border border-gray-600 rounded-lg hover:bg-gray-600 transition-colors"
             >
               Close
             </button>
