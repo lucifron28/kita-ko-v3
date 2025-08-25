@@ -1,6 +1,8 @@
-# Kitako - AI-Powered Proof-of-Income Platform
+<div align="center">
+  <img src="frontend/src/assets/images/kitako-logo.png" alt="Kitako Logo" width="200" />
+</div>
 
-![Kitako Logo](frontend/src/assets/images/kitako-logo.png)
+# Kitako - AI-Powered Proof-of-Income Platform
 
 A comprehensive platform that helps informal earners in the Philippines generate professional, AI-powered proof-of-income reports for loan applications, government subsidies, and other financial needs.
 
