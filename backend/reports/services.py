@@ -565,8 +565,7 @@ class IncomeReportGenerator:
             This document can be verified online using the QR code below or by visiting:<br/>
             <b>{report.qr_code_url}</b><br/><br/>
             Verification Code: <b>{report.verification_code}</b><br/>
-            Document Hash: <font name="Courier">{report.document_hash[:32]}...</font><br/><br/>
-            <b>Verification Status:</b> {report.get_signature_verification_status_display()}
+            Document Hash: <font name="Courier">{report.document_hash[:32]}...</font>
             """
             
             verification_paragraph = Paragraph(verification_text, self.styles['CustomBody'])
@@ -590,8 +589,7 @@ class IncomeReportGenerator:
             <b>Document Verification Information</b><br/><br/>
             Verification Code: <b>{report.verification_code}</b><br/>
             Document Hash: <font name="Courier">{report.document_hash[:32]}...</font><br/>
-            Verification URL: {report.qr_code_url}<br/><br/>
-            <b>Verification Status:</b> {report.get_signature_verification_status_display()}
+            Verification URL: {report.qr_code_url}
             """
             
             verification_paragraph = Paragraph(verification_text, self.styles['CustomBody'])
